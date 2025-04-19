@@ -66,8 +66,8 @@ export class EditorToolbar extends Toolbar {
     // Class-specific methods
     ////////////////////////////////////////////////////////////////////////
     updateAll() {
-        let iconsLayoutH = `${this.app.host}/icons/toolbar/layout-h.png`;
-        let iconsLayoutV = `${this.app.host}/icons/toolbar/layout-v.png`;
+        let iconsLayoutH = `${this.app.host}/music/icons/toolbar/layout-h.png`;
+        let iconsLayoutV = `${this.app.host}/music/icons/toolbar/layout-v.png`;
         const isHorizontal = (this.app.options.editorSplitterHorizontal) ? true : false;
         const isToggled = this.panel.xmlEditorView.isEnabled() ? true : false;
         const isAutoMode = this.panel.xmlEditorView.isAutoMode() ? true : false;
