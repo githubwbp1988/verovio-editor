@@ -27,9 +27,9 @@ export class MidiToolbar extends Toolbar {
     midiTotalTime: HTMLDivElement;
 
     constructor(div: HTMLDivElement, app: App) {
-        let iconsPlay = `${app.host}/icons/toolbar/play.png`;
-        let iconsPause = `${app.host}/icons/toolbar/pause.png`;
-        let iconsStop = `${app.host}/icons/toolbar/stop.png`;
+        let iconsPlay = `${app.host}/music/icons/toolbar/play.png`;
+        let iconsPause = `${app.host}/music/icons/toolbar/pause.png`;
+        let iconsStop = `${app.host}/music/icons/toolbar/stop.png`;
 
         super(div, app);
 

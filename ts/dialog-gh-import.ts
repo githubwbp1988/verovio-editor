@@ -39,12 +39,12 @@ export class DialogGhImport extends Dialog {
     constructor(div: HTMLDivElement, app: App, title: string, options: Dialog.Options, githubManager: GitHubManager) {
         super(div, app, title, options);
 
-        this.iconsBranch = `${app.host}/icons/dialog/branch.png`;
-        this.iconsInstitution = `${app.host}/icons/dialog/institution.png`;
-        this.iconsFile = `${app.host}/icons/dialog/file.png`;
-        this.iconsFolder = `${app.host}/icons/dialog/folder.png`;
-        this.iconsRepo = `${app.host}/icons/dialog/repo.png`;
-        this.iconsUser = `${app.host}/icons/dialog/user.png`;
+        this.iconsBranch = `${app.host}/music/icons/dialog/branch.png`;
+        this.iconsInstitution = `${app.host}/music/icons/dialog/institution.png`;
+        this.iconsFile = `${app.host}/music/icons/dialog/file.png`;
+        this.iconsFolder = `${app.host}/music/icons/dialog/folder.png`;
+        this.iconsRepo = `${app.host}/music/icons/dialog/repo.png`;
+        this.iconsUser = `${app.host}/music/icons/dialog/user.png`;
 
         // output members
         this.data = null;

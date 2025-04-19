@@ -26,9 +26,9 @@ export class EditorPanel extends GenericView {
         this.validator = validator;
         this.rngLoader = rngLoader;
         this.eventManager = new EventManager(this);
-        this.toolbar = appendDivTo(this.element, { class: `vrv-editor-toolbar` });
-        this.editorToolbar = new EditorToolbar(this.toolbar, this.app, this);
-        this.customEventManager.addToPropagationList(this.editorToolbar.customEventManager);
+        // this.toolbar = appendDivTo(this.element, { class: `vrv-editor-toolbar` });
+        // this.editorToolbar = new EditorToolbar(this.toolbar, this.app, this);
+        // this.customEventManager.addToPropagationList(this.editorToolbar.customEventManager);
         this.hSplit = appendDivTo(this.element, { class: `vrv-h-split` });
         this.toolPanel = appendDivTo(this.hSplit, { class: `vrv-editor-tool-panel` });
         this.vSplit = appendDivTo(this.hSplit, { class: `vrv-v-split` });
@@ -40,7 +40,7 @@ export class EditorPanel extends GenericView {
         this.editor = appendDivTo(this.split, { class: `vrv-view`, style: `` });
         this.editorView = new EditorView(this.editor, this.app, this.verovio);
         this.customEventManager.addToPropagationList(this.editorView.customEventManager);
-        this.editorToolbar.bindEvents(this.editorView.actionManager);
+        // this.editorToolbar.bindEvents(this.editorView.actionManager);
         this.splitter = appendDivTo(this.split, { class: `` });
         this.eventManager.bind(this.splitter, 'mousedown', this.onDragInit);
         this.boundMouseMove = (e) => this.onDragMove(e);
@@ -79,10 +79,10 @@ export class EditorPanel extends GenericView {
         //this.toolPanel.style.display = this.xmlEditorView.isEnabled() ? 'none' : 'block';
         //this.keyboard.style.display = this.xmlEditorView.isEnabled() ? 'none' : 'flex';
         // Force the toolbar to be displayed when re-activate because the it does not have received the event yet
-        this.toolbar.style.display = 'block';
-        let height = this.element.clientHeight - this.toolbar.offsetHeight - this.keyboard.offsetHeight;
+        // this.toolbar.style.display = 'block';
+        // let height = this.element.clientHeight - this.toolbar.offsetHeight - this.keyboard.offsetHeight;
         let width = this.element.clientWidth - this.toolPanel.offsetWidth;
-        this.split.style.height = `${height}px`;
+        // this.split.style.height = `${height}px`;
         this.split.style.width = `${width}px`;
         this.keyboard.style.width = `${width}px`;
         this.xmlEditor.style.display = 'block';
@@ -93,28 +93,28 @@ export class EditorPanel extends GenericView {
             this.xmlEditor.style.height = `0px`;
             this.xmlEditor.style.width = `0px`;
             this.splitter.style.display = 'none';
-            this.editor.style.height = `${height}px`;
+            // this.editor.style.height = `${height}px`;
             this.editor.style.width = `${width}px`;
         }
         else if (this.app.options.editorSplitterHorizontal) {
-            let editorHeight = Math.floor(height * this.splitterSize / 100);
+            // let editorHeight = Math.floor(height * this.splitterSize / 100);
             // 10 is the bottom border of the editor view
-            let xmlHeight = Math.ceil((height * (100 - this.splitterSize) / 100) - 10);
+            // let xmlHeight = Math.ceil((height * (100 - this.splitterSize) / 100) - 10);
             this.editor.style.height = `${editorHeight}px`;
             this.editor.style.width = `${width}px`;
-            this.xmlEditor.style.height = `${xmlHeight}px`;
+            // this.xmlEditor.style.height = `${xmlHeight}px`;
             this.xmlEditor.style.width = `${width}px`;
             this.element.style.height = this.element.parentElement.style.height;
             this.element.style.width = this.element.parentElement.style.width;
         }
         else {
-            let editorWidth = Math.floor(width * this.splitterSize / 100);
-            // 10 is the bottom border of the editor view
-            let xmlWidth = Math.ceil((width * (100 - this.splitterSize) / 100) - 10);
-            this.editor.style.height = `${height}px`;
-            this.editor.style.width = `${editorWidth}px`;
-            this.xmlEditor.style.height = `${height}px`;
-            this.xmlEditor.style.width = `${xmlWidth}px`;
+            // let editorWidth = Math.floor(width * this.splitterSize / 100);
+            // // 10 is the bottom border of the editor view
+            // let xmlWidth = Math.ceil((width * (100 - this.splitterSize) / 100) - 10);
+            // this.editor.style.height = `${height}px`;
+            // this.editor.style.width = `${editorWidth}px`;
+            // this.xmlEditor.style.height = `${height}px`;
+            // this.xmlEditor.style.width = `${xmlWidth}px`;
         }
         this.element.style.height = this.element.parentElement.style.height;
         this.element.style.width = this.element.parentElement.style.width;

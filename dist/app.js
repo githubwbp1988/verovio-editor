@@ -35,11 +35,13 @@ import { RNGLoader } from './rng-loader.js';
 import { PDFWorkerProxy, VerovioWorkerProxy, ValidatorWorkerProxy } from './worker-proxy.js';
 import { appendAnchorTo, appendDivTo, appendInputTo, appendLinkTo, appendTextAreaTo } from './utils/functions.js';
 import { aboutMsg, reloadMsg, resetMsg, version } from './utils/messages.js';
-let filter = '/svg/filter.xml';
+
+let filter = '/music/svg/filter.xml';
+
 export class App {
     constructor(div, options) {
         this.clientId = "fd81068a15354a300522";
-        this.host = (window.location.hostname == "localhost") ? `http://${window.location.host}` : "https://editor.verovio.org";
+        this.host = (window.location.hostname == "localhost") ? `http://${window.location.host}` : "https://iflamer.com";
         this.id = this.clientId;
         this.notificationStack = [];
         this.githubManager = new GitHubManager(this);
@@ -100,7 +102,7 @@ export class App {
         while (this.element.firstChild) {
             this.element.firstChild.remove();
         }
-        appendLinkTo(document.head, { href: `${this.host}/css/verovio.css`, rel: `stylesheet` });
+        appendLinkTo(document.head, { href: `${this.host}/music/css/verovio.css`, rel: `stylesheet` });
         this.loadingCount = 0;
         this.eventManager = new EventManager(this);
         this.customEventManager = new CustomEventManager();
@@ -147,7 +149,7 @@ export class App {
         this.customEventManager.bind(this, 'onResized', this.onResized);
         let event = new CustomEvent('onResized');
         this.customEventManager.dispatch(event);
-        const verovioWorkerURL = this.getWorkerURL(`${this.host}/dist/verovio-worker.js`);
+        const verovioWorkerURL = this.getWorkerURL(`${this.host}/music/dist/verovio-worker.js`);
         const verovioWorker = new Worker(verovioWorkerURL);
         const verovioUrl = `https://www.verovio.org/javascript/${this.options.verovioVersion}/verovio-toolkit-wasm.js`;
         //const verovioUrl = `http://localhost:8001/build/verovio-toolkit-wasm.js`
@@ -167,7 +169,7 @@ export class App {
         this.pageCount = 0;
         this.currentZoomIndex = 4;
         if (this.options.enableEditor) {
-            const validatorWorkerURL = this.getWorkerURL(`${this.host}/dist/validator-worker.js`);
+            const validatorWorkerURL = this.getWorkerURL(`${this.host}/music/dist/validator-worker.js`);
             const validatorWorker = new Worker(validatorWorkerURL);
             this.validator = new ValidatorWorkerProxy(validatorWorker);
             this.rngLoader = new RNGLoader();
@@ -184,13 +186,15 @@ export class App {
             this.loadData(last.data, last.filename);
         }
         // Listen and wait for Module to emit onRuntimeInitialized
-        this.startLoading("Loading Verovio ...");
+        // this.startLoading("Loading Verovio ...");
+        this.startLoading("载入中 ...");
         this.verovio.onRuntimeInitialized().then(() => __awaiter(this, void 0, void 0, function* () {
             const version = yield this.verovio.getVersion();
             console.log(version);
             this.endLoading();
             if (this.options.enableEditor) {
-                this.startLoading("Loading the XML validator ...");
+                // this.startLoading("Loading the XML validator ...");
+                this.startLoading("验证加载 ...");
                 // Listen and wait for Module to emit onRuntimeInitialized
                 this.validator.onRuntimeInitialized().then(() => __awaiter(this, void 0, void 0, function* () {
                     this.currentSchema = this.options.schema;
@@ -238,7 +242,8 @@ export class App {
         }
     }
     createViews() {
-        this.startLoading("Loading the views ...");
+        // this.startLoading("Loading the views ...");
+        this.startLoading("加载曲谱视图 ...");
         this.view = null;
         this.toolbarView = null;
         if (this.options.enableDocument) {
@@ -376,7 +381,8 @@ export class App {
     ////////////////////////////////////////////////////////////////////////
     loadMEI(convert) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.startLoading("Loading the MEI data ...");
+            // this.startLoading("Loading the MEI data ...");
+            this.startLoading("加载MEI数据 ...");
             yield this.verovio.loadData(this.mei);
             yield this.applySelection();
             this.pageCount = yield this.verovio.getPageCount();
@@ -415,12 +421,12 @@ export class App {
                 return;
             const schema = /<\?xml-model.*href="([^"]*).*/;
             const schemaMatch = schema.exec(this.mei);
-            if (schemaMatch && schemaMatch[1] !== this.currentSchema) {
-                this.currentSchema = this.options.schemaDefault;
-                const dlg = new Dialog(this.dialog, this, "Different Schema in the file", { icon: "warning", type: Dialog.Type.Msg });
-                dlg.setContent(`The Schema '${schemaMatch[1]}' in the file is different from the one in the editor<br><br>The validation in the editor will use the Schema '${this.options.schemaDefault}'`);
-                yield dlg.show();
-            }
+            // if (schemaMatch && schemaMatch[1] !== this.currentSchema) {
+            //     this.currentSchema = this.options.schemaDefault;
+            //     const dlg = new Dialog(this.dialog, this, "Different Schema in the file", { icon: "warning", type: Dialog.Type.Msg });
+            //     dlg.setContent(`The Schema '${schemaMatch[1]}' in the file is different from the one in the editor<br><br>The validation in the editor will use the Schema '${this.options.schemaDefault}'`);
+            //     yield dlg.show();
+            // }
         });
     }
     playMEI() {
@@ -433,7 +439,7 @@ export class App {
     generatePDF() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.pdf) {
-                const pdfWorkerURL = this.getWorkerURL(`${this.host}/dist/pdf-worker.js`);
+                const pdfWorkerURL = this.getWorkerURL(`${this.host}/music/dist/pdf-worker.js`);
                 const pdfWorker = new Worker(pdfWorkerURL);
                 this.pdf = new PDFWorkerProxy(pdfWorker);
             }
@@ -582,6 +588,31 @@ export class App {
             reader.readAsText(file);
         });
     }
+
+    fileLoadMei(e) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const filePath = e.target.dataset.filepath;
+
+            const filename = e.target.dataset.filename;
+            const convert = false;
+
+            let self = this
+            async function readFile() {
+                try {
+                    const response = await fetch(filePath);
+                    
+                    const data = await response.text();
+
+                    self.loadData(data, filename, convert);
+                } catch (error) {
+                    console.error('读取文件时出错:', error);
+                }
+            }
+
+            readFile();
+        });
+    }
+
     fileExport(e) {
         return __awaiter(this, void 0, void 0, function* () {
             const dlg = new DialogExport(this.dialog, this, "Select MEI export parameters");

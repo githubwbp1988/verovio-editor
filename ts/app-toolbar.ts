@@ -56,16 +56,16 @@ export class AppToolbar extends Toolbar {
 
         this.active = true;
 
-        let iconsArrowLeft = `${app.host}/icons/toolbar/arrow-left.png`;
-        let iconsArrowRight = `${app.host}/icons/toolbar/arrow-right.png`;
-        let iconsDocument = `${app.host}/icons/toolbar/document.png`;
-        let iconsEditor = `${app.host}/icons/toolbar/editor.png`;
-        let iconsGithubSignin = `${app.host}/icons/toolbar/github-signin.png`;
-        let iconsLayout = `${app.host}/icons/toolbar/layout.png`;
-        let iconsResponsive = `${app.host}/icons/toolbar/responsive.png`;
-        let iconsZoomIn = `${app.host}/icons/toolbar/zoom-in.png`;
-        let iconsZoomOut = `${app.host}/icons/toolbar/zoom-out.png`;
-        let iconsSettings = `${app.host}/icons/toolbar/settings.png`;
+        let iconsArrowLeft = `${app.host}/music/icons/toolbar/arrow-left.png`;
+        let iconsArrowRight = `${app.host}/music/icons/toolbar/arrow-right.png`;
+        let iconsDocument = `${app.host}/music/icons/toolbar/document.png`;
+        let iconsEditor = `${app.host}/music/icons/toolbar/editor.png`;
+        let iconsGithubSignin = `${app.host}/music/icons/toolbar/github-signin.png`;
+        let iconsLayout = `${app.host}/music/icons/toolbar/layout.png`;
+        let iconsResponsive = `${app.host}/music/icons/toolbar/responsive.png`;
+        let iconsZoomIn = `${app.host}/music/icons/toolbar/zoom-in.png`;
+        let iconsZoomOut = `${app.host}/music/icons/toolbar/zoom-out.png`;
+        let iconsSettings = `${app.host}/music/icons/toolbar/settings.png`;
 
         ////////////////////////////////////////////////////////////////////////
         // View selection

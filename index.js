@@ -35,7 +35,8 @@ if ( getParameterByName( 'reset' ) != null ) options.appReset = true;
 // Create the app - here with an empty option object
 const app = new App( document.getElementById( "app" ), options );
 
-let file = 'examples/puccini.mei';
+// let file = 'examples/puccini.mei';
+let file = 'mei/千本櫻.mei'
 let convert = false;
 let onlyIfEmpty = true;
 let urlFile = getParameterByName( 'file' );

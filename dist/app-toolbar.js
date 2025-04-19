@@ -12,16 +12,16 @@ export class AppToolbar extends Toolbar {
     constructor(div, app) {
         super(div, app);
         this.active = true;
-        let iconsArrowLeft = `${app.host}/icons/toolbar/arrow-left.png`;
-        let iconsArrowRight = `${app.host}/icons/toolbar/arrow-right.png`;
-        let iconsDocument = `${app.host}/icons/toolbar/document.png`;
-        let iconsEditor = `${app.host}/icons/toolbar/editor.png`;
-        let iconsGithubSignin = `${app.host}/icons/toolbar/github-signin.png`;
-        let iconsLayout = `${app.host}/icons/toolbar/layout.png`;
-        let iconsResponsive = `${app.host}/icons/toolbar/responsive.png`;
-        let iconsZoomIn = `${app.host}/icons/toolbar/zoom-in.png`;
-        let iconsZoomOut = `${app.host}/icons/toolbar/zoom-out.png`;
-        let iconsSettings = `${app.host}/icons/toolbar/settings.png`;
+        let iconsArrowLeft = `${app.host}/music/icons/toolbar/arrow-left.png`;
+        let iconsArrowRight = `${app.host}/music/icons/toolbar/arrow-right.png`;
+        let iconsDocument = `${app.host}/music/icons/toolbar/document.png`;
+        let iconsEditor = `${app.host}/music/icons/toolbar/editor.png`;
+        let iconsGithubSignin = `${app.host}/music/icons/toolbar/github-signin.png`;
+        let iconsLayout = `${app.host}/music/icons/toolbar/layout.png`;
+        let iconsResponsive = `${app.host}/music/icons/toolbar/responsive.png`;
+        let iconsZoomIn = `${app.host}/music/icons/toolbar/zoom-in.png`;
+        let iconsZoomOut = `${app.host}/music/icons/toolbar/zoom-out.png`;
+        let iconsSettings = `${app.host}/music/icons/toolbar/settings.png`;
         ////////////////////////////////////////////////////////////////////////
         // View selection
         ////////////////////////////////////////////////////////////////////////
@@ -30,24 +30,24 @@ export class AppToolbar extends Toolbar {
         const viewSelectorSubmenuContent = appendDivTo(viewSelectorMenu, { class: `vrv-menu-content` });
         appendDivTo(viewSelectorSubmenuContent, { class: `vrv-v-separator` });
         let viewCount = 0;
-        if (this.app.options.enableDocument) {
-            this.viewDocument = appendDivTo(viewSelectorSubmenuContent, { class: `vrv-menu-icon-left`, style: { backgroundImage: `url(${iconsDocument})` }, 'data-before': `Document` });
-            this.viewDocument.dataset.view = 'document';
-            this.app.eventManager.bind(this.viewDocument, 'click', this.app.setView);
-            viewCount += 1;
-        }
+        // if (this.app.options.enableDocument) {
+        //     this.viewDocument = appendDivTo(viewSelectorSubmenuContent, { class: `vrv-menu-icon-left`, style: { backgroundImage: `url(${iconsDocument})` }, 'data-before': `Document` });
+        //     this.viewDocument.dataset.view = 'document';
+        //     this.app.eventManager.bind(this.viewDocument, 'click', this.app.setView);
+        //     viewCount += 1;
+        // }
         if (this.app.options.enableResponsive) {
             this.viewResponsive = appendDivTo(viewSelectorSubmenuContent, { class: `vrv-menu-icon-left`, style: { backgroundImage: `url(${iconsResponsive})` }, 'data-before': `Responsive` });
             this.viewResponsive.dataset.view = 'responsive';
             this.app.eventManager.bind(this.viewResponsive, 'click', this.app.setView);
             viewCount += 1;
         }
-        if (this.app.options.enableEditor) {
-            this.viewEditor = appendDivTo(viewSelectorSubmenuContent, { class: `vrv-menu-icon-left`, style: { backgroundImage: `url(${iconsEditor})` }, 'data-before': `Editor` });
-            this.viewEditor.dataset.view = 'editor';
-            this.app.eventManager.bind(this.viewEditor, 'click', this.app.setView);
-            viewCount += 1;
-        }
+        // if (this.app.options.enableEditor) {
+        //     this.viewEditor = appendDivTo(viewSelectorSubmenuContent, { class: `vrv-menu-icon-left`, style: { backgroundImage: `url(${iconsEditor})` }, 'data-before': `Editor` });
+        //     this.viewEditor.dataset.view = 'editor';
+        //     this.app.eventManager.bind(this.viewEditor, 'click', this.app.setView);
+        //     viewCount += 1;
+        // }
         if (viewCount === 1) {
             viewSelectorMenu.style.display = 'none';
         }
@@ -63,102 +63,162 @@ export class AppToolbar extends Toolbar {
         this.fileImport = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Import MEI file` });
         this.fileImport.dataset.ext = 'MEI';
         this.app.eventManager.bind(this.fileImport, 'click', this.app.fileImport);
-        this.fileImportMusicXML = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Import MusicXML file` });
-        fileMenuContent.appendChild(this.fileImportMusicXML);
-        this.app.eventManager.bind(this.fileImportMusicXML, 'click', this.app.fileImport);
-        this.fileImportCMME = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Import CMME file` });
-        fileMenuContent.appendChild(this.fileImportCMME);
-        this.app.eventManager.bind(this.fileImportCMME, 'click', this.app.fileImport);
+        // this.fileImportMusicXML = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Import MusicXML file` });
+        // fileMenuContent.appendChild(this.fileImportMusicXML);
+        // this.app.eventManager.bind(this.fileImportMusicXML, 'click', this.app.fileImport);
+        // this.fileImportCMME = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Import CMME file` });
+        // fileMenuContent.appendChild(this.fileImportCMME);
+        // this.app.eventManager.bind(this.fileImportCMME, 'click', this.app.fileImport);
         const fileRecentSubMenu = appendDivTo(fileMenuContent, { class: `vrv-submenu` });
         this.fileRecent = appendDivTo(fileRecentSubMenu, { class: `vrv-submenu-text`, 'data-before': `Recent files` });
         this.subSubMenu = appendDivTo(fileRecentSubMenu, { class: `vrv-submenu-content` });
-        appendDivTo(fileMenuContent, { class: `vrv-v-separator` });
-        const fileExport = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Export MEI file` });
-        fileExport.dataset.ext = 'MEI';
-        this.app.eventManager.bind(fileExport, 'click', this.app.fileExport);
-        const fileCopy = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Copy MEI to clipboard` });
-        this.app.eventManager.bind(fileCopy, 'click', this.app.fileCopyToClipboard);
-        appendDivTo(fileMenuContent, { class: `vrv-v-separator` });
-        const fileExportPDF = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Export as PDF` });
-        this.app.eventManager.bind(fileExportPDF, 'click', this.app.fileExportPDF);
-        const fileExportMIDI = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Export as MIDI` });
-        this.app.eventManager.bind(fileExportMIDI, 'click', this.app.fileExportMIDI);
-        appendDivTo(fileMenuContent, { class: `vrv-v-separator` });
-        this.fileSelection = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Apply content selection` });
-        this.app.eventManager.bind(this.fileSelection, 'click', this.app.fileSelection);
-        ////////////////////////////////////////////////////////////////////////
-        // GitHub
-        ////////////////////////////////////////////////////////////////////////
-        this.githubMenu = appendDivTo(this.element, { class: `vrv-menu`, style: { display: `none` } });
-        appendDivTo(this.githubMenu, { class: `vrv-btn-text`, 'data-before': `GitHub` });
-        const githubMenuContent = appendDivTo(this.githubMenu, { class: `vrv-menu-content` });
-        appendDivTo(githubMenuContent, { class: `vrv-v-separator` });
-        this.githubImport = appendDivTo(githubMenuContent, { class: `vrv-menu-text`, 'data-before': `Import MEI file from GitHub` });
-        this.app.eventManager.bind(this.githubImport, 'click', this.app.githubImport);
-        this.githubExport = appendDivTo(githubMenuContent, { class: `vrv-menu-text`, 'data-before': `Export (commit/push) to GitHub` });
-        this.app.eventManager.bind(this.githubExport, 'click', this.app.githubExport);
-        ////////////////////////////////////////////////////////////////////////
-        // Navigation
-        ////////////////////////////////////////////////////////////////////////
-        this.pageControls = appendDivTo(this.element, { class: `vrv-btn-group` });
-        appendDivTo(this.pageControls, { class: `vrv-h-separator` });
-        this.prevPage = appendDivTo(this.pageControls, { class: `vrv-btn-icon-left`, style: { backgroundImage: `url(${iconsArrowLeft})` }, 'data-before': `Previous` });
-        this.app.eventManager.bind(this.prevPage, 'click', this.app.prevPage);
-        this.nextPage = appendDivTo(this.pageControls, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsArrowRight})` }, 'data-before': `Next` });
-        this.app.eventManager.bind(this.nextPage, 'click', this.app.nextPage);
+        // appendDivTo(fileMenuContent, { class: `vrv-v-separator` });
+        // const fileExport = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Export MEI file` });
+        // fileExport.dataset.ext = 'MEI';
+        // this.app.eventManager.bind(fileExport, 'click', this.app.fileExport);
+        // const fileCopy = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Copy MEI to clipboard` });
+        // this.app.eventManager.bind(fileCopy, 'click', this.app.fileCopyToClipboard);
+        // appendDivTo(fileMenuContent, { class: `vrv-v-separator` });
+        // const fileExportPDF = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Export as PDF` });
+        // this.app.eventManager.bind(fileExportPDF, 'click', this.app.fileExportPDF);
+        // const fileExportMIDI = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Export as MIDI` });
+        // this.app.eventManager.bind(fileExportMIDI, 'click', this.app.fileExportMIDI);
+        // appendDivTo(fileMenuContent, { class: `vrv-v-separator` });
+        // this.fileSelection = appendDivTo(fileMenuContent, { class: `vrv-menu-text`, 'data-before': `Apply content selection` });
+        // this.app.eventManager.bind(this.fileSelection, 'click', this.app.fileSelection);
+        // ////////////////////////////////////////////////////////////////////////
+        // // GitHub
+        // ////////////////////////////////////////////////////////////////////////
+        // this.githubMenu = appendDivTo(this.element, { class: `vrv-menu`, style: { display: `none` } });
+        // appendDivTo(this.githubMenu, { class: `vrv-btn-text`, 'data-before': `GitHub` });
+        // const githubMenuContent = appendDivTo(this.githubMenu, { class: `vrv-menu-content` });
+        // appendDivTo(githubMenuContent, { class: `vrv-v-separator` });
+        // this.githubImport = appendDivTo(githubMenuContent, { class: `vrv-menu-text`, 'data-before': `Import MEI file from GitHub` });
+        // this.app.eventManager.bind(this.githubImport, 'click', this.app.githubImport);
+        // this.githubExport = appendDivTo(githubMenuContent, { class: `vrv-menu-text`, 'data-before': `Export (commit/push) to GitHub` });
+        // this.app.eventManager.bind(this.githubExport, 'click', this.app.githubExport);
+        // ////////////////////////////////////////////////////////////////////////
+        // // Navigation
+        // ////////////////////////////////////////////////////////////////////////
+        // this.pageControls = appendDivTo(this.element, { class: `vrv-btn-group` });
+        // appendDivTo(this.pageControls, { class: `vrv-h-separator` });
+        // this.prevPage = appendDivTo(this.pageControls, { class: `vrv-btn-icon-left`, style: { backgroundImage: `url(${iconsArrowLeft})` }, 'data-before': `Previous` });
+        // this.app.eventManager.bind(this.prevPage, 'click', this.app.prevPage);
+        // this.nextPage = appendDivTo(this.pageControls, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsArrowRight})` }, 'data-before': `Next` });
+        // this.app.eventManager.bind(this.nextPage, 'click', this.app.nextPage);
         ////////////////////////////////////////////////////////////////////////
         // Zoom
         ////////////////////////////////////////////////////////////////////////
         this.zoomControls = appendDivTo(this.element, { class: `vrv-btn-group` });
         appendDivTo(this.zoomControls, { class: `vrv-h-separator` });
-        this.zoomOut = appendDivTo(this.zoomControls, { class: `vrv-btn-icon-left`, style: { backgroundImage: `url(${iconsZoomOut})` }, 'data-before': `Zoom out` });
+        this.zoomOut = appendDivTo(this.zoomControls, { class: `vrv-btn-icon-left`, style: { backgroundImage: `url(${iconsZoomOut})` }, 'data-before': `缩放` });
         this.app.eventManager.bind(this.zoomOut, 'click', this.app.zoomOut);
-        this.zoomIn = appendDivTo(this.zoomControls, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsZoomIn})` }, 'data-before': `Zoom in` });
+        this.zoomIn = appendDivTo(this.zoomControls, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsZoomIn})` }, 'data-before': `放大` });
         this.app.eventManager.bind(this.zoomIn, 'click', this.app.zoomIn);
         ////////////////////////////////////////////////////////////////////////
         // Sub-toolbars
         ////////////////////////////////////////////////////////////////////////
         this.midiPlayerSubToolbar = appendDivTo(this.element, {});
         this.editorSubToolbar = appendDivTo(this.element, {});
-        ////////////////////////////////////////////////////////////////////////
-        // Settings
-        ////////////////////////////////////////////////////////////////////////
-        appendDivTo(this.element, { class: `vrv-h-separator` });
-        const settingsMenu = appendDivTo(this.element, { class: `vrv-menu` });
-        if (!app.options.enableEditor)
-            settingsMenu.style.display = 'none';
-        appendDivTo(settingsMenu, { class: `vrv-btn-icon-left`, style: { backgroundImage: `url(${iconsSettings})` }, 'data-before': `Settings` });
-        const settingsMenuContent = appendDivTo(settingsMenu, { class: `vrv-menu-content` });
-        appendDivTo(settingsMenuContent, { class: `vrv-v-separator` });
-        this.settingsEditor = appendDivTo(settingsMenuContent, { class: `vrv-menu-text`, 'data-before': `Editor options` });
-        this.app.eventManager.bind(this.settingsEditor, 'click', this.app.settingsEditor);
-        this.settingsVerovio = appendDivTo(settingsMenuContent, { class: `vrv-menu-text`, 'data-before': `Verovio options` });
-        this.app.eventManager.bind(this.settingsVerovio, 'click', this.app.settingsVerovio);
-        ////////////////////////////////////////////////////////////////////////
-        // Help
-        ////////////////////////////////////////////////////////////////////////
-        appendDivTo(this.element, { class: `vrv-h-separator` });
-        const helpMenu = appendDivTo(this.element, { class: `vrv-menu` });
-        if (!app.options.enableEditor)
-            helpMenu.style.display = 'none';
-        appendDivTo(helpMenu, { class: `vrv-btn-text`, 'data-before': `Help` });
-        const helpMenuContent = appendDivTo(helpMenu, { class: `vrv-menu-content` });
-        appendDivTo(helpMenuContent, { class: `vrv-v-separator` });
-        this.helpAbout = appendDivTo(helpMenuContent, { class: `vrv-menu-text`, 'data-before': `About this application` });
-        this.app.eventManager.bind(this.helpAbout, 'click', this.app.helpAbout);
-        this.helpReset = appendDivTo(helpMenuContent, { class: `vrv-menu-text`, 'data-before': `Reset to default` });
-        this.app.eventManager.bind(this.helpReset, 'click', this.app.helpReset);
-        ////////////////////////////////////////////////////////////////////////
-        // Login
-        ////////////////////////////////////////////////////////////////////////
-        this.loginGroup = appendDivTo(this.element, { class: `vrv-btn-group-right` });
-        if (!app.options.enableEditor)
-            this.loginGroup.style.display = 'none';
-        appendDivTo(this.loginGroup, { class: `vrv-h-separator` });
-        this.logout = appendDivTo(this.loginGroup, { class: `vrv-btn-text`, style: { display: `none` }, 'data-before': `Logout` });
-        this.app.eventManager.bind(this.logout, 'click', this.app.logout);
-        this.login = appendDivTo(this.loginGroup, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsGithubSignin})` }, 'data-before': `Github` });
-        this.app.eventManager.bind(this.login, 'click', this.app.login);
+
+        // 选择曲谱
+        const scoreMenu = appendDivTo(this.element, { class: `vrv-menu` });
+        this.scoreMenuBtn = appendDivTo(scoreMenu, { class: `vrv-btn-text`, 'data-before': `选择曲谱播放` });
+        const scoreMenuContent = appendDivTo(scoreMenu, { class: `vrv-menu-content` });
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score1 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千本櫻` });
+        this.score1.dataset.filepath = '/music/mei/千本櫻.mei'
+        this.score1.dataset.filename = '千本櫻';
+        this.app.eventManager.bind(this.score1, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score2 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `夜樱与幽世之蝶` });
+        this.score2.dataset.filepath = '/music/mei/夜樱与幽世之蝶.mei'
+        this.score2.dataset.filename = '夜樱与幽世之蝶';
+        this.app.eventManager.bind(this.score2, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score3 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千夜一夜物語` });
+        this.score3.dataset.filepath = '/music/mei/千夜一夜物語.mei'
+        this.score3.dataset.filename = '千夜一夜物語';
+        this.app.eventManager.bind(this.score3, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score4 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `Game of Thrones_simple` });
+        this.score4.dataset.filepath = '/music/mei/Game of Thrones_simple.mei'
+        this.score4.dataset.filename = 'Game of Thrones_simple';
+        this.app.eventManager.bind(this.score4, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score5 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千夜一夜` });
+        this.score5.dataset.filepath = '/music/mei/千夜一夜.mei'
+        this.score5.dataset.filename = '千夜一夜';
+        this.app.eventManager.bind(this.score5, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score6 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千夜_火影` });
+        this.score6.dataset.filepath = '/music/mei/千夜_火影.mei'
+        this.score6.dataset.filename = '千夜_火影';
+        this.app.eventManager.bind(this.score6, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score7 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `亡灵序曲` });
+        this.score7.dataset.filepath = '/music/mei/亡灵序曲.mei'
+        this.score7.dataset.filename = '亡灵序曲';
+        this.app.eventManager.bind(this.score7, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score8 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `Whiplash` });
+        this.score8.dataset.filepath = '/music/mei/Whiplash.mei'
+        this.score8.dataset.filename = 'Whiplash';
+        this.app.eventManager.bind(this.score8, 'click', this.app.fileLoadMei);
+
+        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        this.score9 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `Sadness and Snrrow` });
+        this.score9.dataset.filepath = '/music/mei/Sadness and Snrrow.mei'
+        this.score9.dataset.filename = 'Sadness and Snrrow';
+        this.app.eventManager.bind(this.score9, 'click', this.app.fileLoadMei);
+
+        // ////////////////////////////////////////////////////////////////////////
+        // // Settings
+        // ////////////////////////////////////////////////////////////////////////
+        // appendDivTo(this.element, { class: `vrv-h-separator` });
+        // const settingsMenu = appendDivTo(this.element, { class: `vrv-menu` });
+        // if (!app.options.enableEditor)
+        //     settingsMenu.style.display = 'none';
+        // appendDivTo(settingsMenu, { class: `vrv-btn-icon-left`, style: { backgroundImage: `url(${iconsSettings})` }, 'data-before': `Settings` });
+        // const settingsMenuContent = appendDivTo(settingsMenu, { class: `vrv-menu-content` });
+        // appendDivTo(settingsMenuContent, { class: `vrv-v-separator` });
+        // this.settingsEditor = appendDivTo(settingsMenuContent, { class: `vrv-menu-text`, 'data-before': `Editor options` });
+        // this.app.eventManager.bind(this.settingsEditor, 'click', this.app.settingsEditor);
+        // this.settingsVerovio = appendDivTo(settingsMenuContent, { class: `vrv-menu-text`, 'data-before': `Verovio options` });
+        // this.app.eventManager.bind(this.settingsVerovio, 'click', this.app.settingsVerovio);
+        // ////////////////////////////////////////////////////////////////////////
+        // // Help
+        // ////////////////////////////////////////////////////////////////////////
+        // appendDivTo(this.element, { class: `vrv-h-separator` });
+        // const helpMenu = appendDivTo(this.element, { class: `vrv-menu` });
+        // if (!app.options.enableEditor)
+        //     helpMenu.style.display = 'none';
+        // appendDivTo(helpMenu, { class: `vrv-btn-text`, 'data-before': `Help` });
+        // const helpMenuContent = appendDivTo(helpMenu, { class: `vrv-menu-content` });
+        // appendDivTo(helpMenuContent, { class: `vrv-v-separator` });
+        // this.helpAbout = appendDivTo(helpMenuContent, { class: `vrv-menu-text`, 'data-before': `About this application` });
+        // this.app.eventManager.bind(this.helpAbout, 'click', this.app.helpAbout);
+        // this.helpReset = appendDivTo(helpMenuContent, { class: `vrv-menu-text`, 'data-before': `Reset to default` });
+        // this.app.eventManager.bind(this.helpReset, 'click', this.app.helpReset);
+        // ////////////////////////////////////////////////////////////////////////
+        // // Login
+        // ////////////////////////////////////////////////////////////////////////
+        // this.loginGroup = appendDivTo(this.element, { class: `vrv-btn-group-right` });
+        // if (!app.options.enableEditor)
+        //     this.loginGroup.style.display = 'none';
+        // appendDivTo(this.loginGroup, { class: `vrv-h-separator` });
+        // this.logout = appendDivTo(this.loginGroup, { class: `vrv-btn-text`, style: { display: `none` }, 'data-before': `Logout` });
+        // this.app.eventManager.bind(this.logout, 'click', this.app.logout);
+        // this.login = appendDivTo(this.loginGroup, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsGithubSignin})` }, 'data-before': `Github` });
+        // this.app.eventManager.bind(this.login, 'click', this.app.login);
+        
         // Bindings for hiding menu once an item has be click - the corresponding class is
         // removed when the toolbar is moused over
         for (const node of this.element.querySelectorAll('div.vrv-menu')) {
@@ -176,9 +236,12 @@ export class AppToolbar extends Toolbar {
         this.updateToolbarBtnEnabled(this.nextPage, (this.app.toolbarView.currentPage < this.app.pageCount));
         this.updateToolbarBtnEnabled(this.zoomOut, ((this.app.pageCount > 0) && (this.app.toolbarView.currentZoomIndex > 0)));
         this.updateToolbarBtnEnabled(this.zoomIn, ((this.app.pageCount > 0) && (this.app.toolbarView.currentZoomIndex < this.app.zoomLevels.length - 1)));
-        let isResponsive = ((this.app.view instanceof ResponsiveView) && !(this.app.view instanceof EditorPanel));
-        let isEditor = (this.app.view instanceof EditorPanel);
-        let isDocument = (this.app.view instanceof DocumentView);
+        // let isResponsive = ((this.app.view instanceof ResponsiveView) && !(this.app.view instanceof EditorPanel));
+        let isResponsive = true;
+        // let isEditor = (this.app.view instanceof EditorPanel);
+        let isEditor = false;
+        // let isDocument = (this.app.view instanceof DocumentView);
+        let isDocument = false;
         const hasSelection = (this.app.options.selection && Object.keys(this.app.options.selection).length !== 0);
         this.updateToolbarGrp(this.pageControls, !isDocument);
         this.updateToolbarGrp(this.midiPlayerSubToolbar, isEditor || isResponsive);

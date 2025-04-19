@@ -15,8 +15,8 @@ import { appendDivTo, appendMidiPlayerTo } from './utils/functions.js';
 import { midiScale } from './utils/midi-scale.js';
 export class Keyboard {
     constructor(div, app) {
-        let iconsLeft = `${app.host}/icons/keyboard/left.png`;
-        let iconsRight = `${app.host}/icons/keyboard/right.png`;
+        let iconsLeft = `${app.host}/music/icons/keyboard/left.png`;
+        let iconsRight = `${app.host}/music/icons/keyboard/right.png`;
         this.element = div;
         // Remove previous content
         this.element.innerHTML = "";

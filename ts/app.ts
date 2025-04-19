@@ -177,7 +177,7 @@ export class App {
             this.element.firstChild.remove();
         }
 
-        appendLinkTo(document.head, { href: `${this.host}/css/verovio.css`, rel: `stylesheet` });
+        appendLinkTo(document.head, { href: `${this.host}/music/css/verovio.css`, rel: `stylesheet` });
 
         this.loadingCount = 0;
         this.eventManager = new EventManager(this);
@@ -244,7 +244,7 @@ export class App {
         let event = new CustomEvent('onResized');
         this.customEventManager.dispatch(event);
 
-        const verovioWorkerURL = this.getWorkerURL(`${this.host}/dist/verovio-worker.js`);
+        const verovioWorkerURL = this.getWorkerURL(`${this.host}/music/dist/verovio-worker.js`);
         const verovioWorker = new Worker(verovioWorkerURL);     
         const verovioUrl = `https://www.verovio.org/javascript/${this.options.verovioVersion}/verovio-toolkit-wasm.js`;
         //const verovioUrl = `http://localhost:8001/build/verovio-toolkit-wasm.js`
@@ -267,7 +267,7 @@ export class App {
         this.currentZoomIndex = 4;
 
         if (this.options.enableEditor) {
-            const validatorWorkerURL = this.getWorkerURL(`${this.host}/dist/validator-worker.js`);
+            const validatorWorkerURL = this.getWorkerURL(`${this.host}/music/dist/validator-worker.js`);
             const validatorWorker = new Worker(validatorWorkerURL);
             this.validator = new ValidatorWorkerProxy(validatorWorker);
             this.rngLoader = new RNGLoader();

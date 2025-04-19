@@ -39,18 +39,18 @@ export class EditorToolbar extends Toolbar {
     stemDirAuto: HTMLDivElement;
 
     constructor(div: HTMLDivElement, app: App, panel: EditorPanel) {
-        let editorXml = `${app.host}/icons/toolbar/editor-xml.png`;
-        let editorXmlValidate = `${app.host}/icons/toolbar/validate.png`;
-        let editorXmlForce = `${app.host}/icons/toolbar/force.png`;
+        let editorXml = `${app.host}/music/icons/toolbar/editor-xml.png`;
+        let editorXmlValidate = `${app.host}/music/icons/toolbar/validate.png`;
+        let editorXmlForce = `${app.host}/music/icons/toolbar/force.png`;
 
-        let editorStemDirUp = `${app.host}/icons/editor/stem-dir-up.png`;
-        let editorStemDirDown = `${app.host}/icons/editor/stem-dir-down.png`;
-        let editorStemDirAuto = `${app.host}/icons/editor/stem-dir-auto.png`;
-        let editorPlaceBelow = `${app.host}/icons/editor/place-below.png`;
-        let editorPlaceAuto = `${app.host}/icons/editor/place-auto.png`;
-        let editorPlaceAbove = `${app.host}/icons/editor/place-above.png`;
-        let editorFormDim = `${app.host}/icons/editor/form-dim.png`;
-        let editorFormCres = `${app.host}/icons/editor/form-cres.png`;
+        let editorStemDirUp = `${app.host}/music/icons/editor/stem-dir-up.png`;
+        let editorStemDirDown = `${app.host}/music/icons/editor/stem-dir-down.png`;
+        let editorStemDirAuto = `${app.host}/music/icons/editor/stem-dir-auto.png`;
+        let editorPlaceBelow = `${app.host}/music/icons/editor/place-below.png`;
+        let editorPlaceAuto = `${app.host}/music/icons/editor/place-auto.png`;
+        let editorPlaceAbove = `${app.host}/music/icons/editor/place-above.png`;
+        let editorFormDim = `${app.host}/music/icons/editor/form-dim.png`;
+        let editorFormCres = `${app.host}/music/icons/editor/form-cres.png`;
 
         super(div, app);
 
