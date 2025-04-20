@@ -151,8 +151,8 @@ export class App {
         this.customEventManager.dispatch(event);
         const verovioWorkerURL = this.getWorkerURL(`${this.host}/music/dist/verovio-worker.js`);
         const verovioWorker = new Worker(verovioWorkerURL);
-        const verovioUrl = `https://www.verovio.org/javascript/${this.options.verovioVersion}/verovio-toolkit-wasm.js`;
-        //const verovioUrl = `http://localhost:8001/build/verovio-toolkit-wasm.js`
+        // const verovioUrl = `https://www.verovio.org/javascript/${this.options.verovioVersion}/verovio-toolkit-wasm.js`;
+        const verovioUrl = `${this.host}/music/dist/utils/verovio-toolkit-wasm.js`
         verovioWorker.postMessage({ verovioUrl });
         this.verovio = new VerovioWorkerProxy(verovioWorker);
         this.verovioOptions =
@@ -246,36 +246,36 @@ export class App {
         this.startLoading("加载曲谱视图 ...");
         this.view = null;
         this.toolbarView = null;
-        if (this.options.enableDocument) {
-            this.currentZoomIndex = this.options.documentZoom;
-            this.view1 = appendDivTo(this.views, { class: `vrv-view` });
-            this.viewDocument = new DocumentView(this.view1, this, this.verovio);
-            this.customEventManager.addToPropagationList(this.viewDocument.customEventManager);
-            if (this.options.defaultView === 'document') {
-                this.view = this.viewDocument;
-                this.toolbarView = this.viewDocument;
-            }
-        }
-        if (this.options.enableEditor) {
-            this.currentZoomIndex = this.options.editorZoom;
-            this.view2 = appendDivTo(this.views, { class: `vrv-view` });
-            this.viewEditor = new EditorPanel(this.view2, this, this.verovio, this.validator, this.rngLoader);
-            this.customEventManager.addToPropagationList(this.viewEditor.customEventManager);
-            if (this.options.defaultView === 'editor') {
-                this.view = this.viewEditor;
-                this.toolbarView = this.viewEditor.editorView;
-            }
-        }
-        if (this.options.enableResponsive) {
-            this.currentZoomIndex = this.options.responsiveZoom;
-            this.view3 = appendDivTo(this.views, { class: `vrv-view` });
-            this.viewResponsive = new ResponsiveView(this.view3, this, this.verovio);
-            this.customEventManager.addToPropagationList(this.viewResponsive.customEventManager);
-            if (this.options.defaultView === 'responsive') {
-                this.view = this.viewResponsive;
-                this.toolbarView = this.viewResponsive;
-            }
-        }
+        // if (this.options.enableDocument) {
+        //     this.currentZoomIndex = this.options.documentZoom;
+        //     this.view1 = appendDivTo(this.views, { class: `vrv-view` });
+        //     this.viewDocument = new DocumentView(this.view1, this, this.verovio);
+        //     this.customEventManager.addToPropagationList(this.viewDocument.customEventManager);
+        //     if (this.options.defaultView === 'document') {
+        //         this.view = this.viewDocument;
+        //         this.toolbarView = this.viewDocument;
+        //     }
+        // }
+        // if (this.options.enableEditor) {
+        //     this.currentZoomIndex = this.options.editorZoom;
+        //     this.view2 = appendDivTo(this.views, { class: `vrv-view` });
+        //     this.viewEditor = new EditorPanel(this.view2, this, this.verovio, this.validator, this.rngLoader);
+        //     this.customEventManager.addToPropagationList(this.viewEditor.customEventManager);
+        //     if (this.options.defaultView === 'editor') {
+        //         this.view = this.viewEditor;
+        //         this.toolbarView = this.viewEditor.editorView;
+        //     }
+        // }
+        // if (this.options.enableResponsive) {
+        this.currentZoomIndex = this.options.responsiveZoom;
+        this.view3 = appendDivTo(this.views, { class: `vrv-view` });
+        this.viewResponsive = new ResponsiveView(this.view3, this, this.verovio);
+        this.customEventManager.addToPropagationList(this.viewResponsive.customEventManager);
+        // if (this.options.defaultView === 'responsive') {
+        this.view = this.viewResponsive;
+        this.toolbarView = this.viewResponsive;
+        // }
+        // }
         // Root element in which verovio-ui is created
         if (!this.view) {
             throw `No view enabled or unknown default view '${this.options.defaultView}' selected.`;

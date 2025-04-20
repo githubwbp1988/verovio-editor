@@ -449,6 +449,56 @@ export class ResponsiveView extends VerovioView {
                 }
             }
 
+            const scrollContainer = this.svgWrapper.parentElement;
+            console.log('scrollContainer => ', scrollContainer.offsetTop, scrollContainer.offsetHeight, scrollContainer.scrollTop, scrollContainer.clientHeight)
+            if (scrollContainer && cursorArray.length > 0) {
+                const containerTop = scrollContainer.offsetTop; // 容器相对于其 offsetParent 的顶部距离
+                const containerBottom = containerTop + scrollContainer.offsetHeight; // 容器底部的绝对位置
+                const scrollY = scrollContainer.scrollTop; // 容器当前的垂直滚动位置
+                const containerViewableHeight = scrollContainer.clientHeight; // 容器的可视高度
+
+                let cursorYTopRelativeToContainerArray = [];
+                let cursorYBottomRelativeToContainerArray = [];
+                let cursorCenterYRelativeToContainerArray = [];
+                for (let k = 0; k < cursorArray.length; k++) {
+                    const cursorYTopRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y1'));
+                    const cursorYBottomRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y2'));
+
+                    const cursorCenterYRelativeToContainer = (parseFloat(cursorArray[k].getAttribute('y1')) + parseFloat(cursorArray[k].getAttribute('y2'))) / 2;
+
+                    cursorYTopRelativeToContainerArray.push(cursorYTopRelativeToContainer);
+                    cursorYBottomRelativeToContainerArray.push(cursorYBottomRelativeToContainer);
+                    cursorCenterYRelativeToContainerArray.push(cursorCenterYRelativeToContainer);
+
+                }
+
+                cursorYTopRelativeToContainerArray = cursorYTopRelativeToContainerArray.sort((a, b) => a - b);
+                cursorYBottomRelativeToContainerArray = cursorYBottomRelativeToContainerArray.sort((a, b) => a - b);
+                cursorCenterYRelativeToContainerArray = cursorCenterYRelativeToContainerArray.sort((a, b) => a - b);
+
+                console.log('****1 cursorYTopRelativeToContainerArray => ', cursorYTopRelativeToContainerArray)
+                console.log('****2 cursorYBottomRelativeToContainerArray => ', cursorYBottomRelativeToContainerArray)
+                console.log('****3 cursorCenterYRelativeToContainerArray => ', cursorCenterYRelativeToContainerArray)
+
+                console.log(' **** 4 scrollY => ', scrollY)
+                console.log(' **** 5 scrollY + containerViewableHeight => ', scrollY + containerViewableHeight)
+
+                // 光标顶部超出可视区域上方
+                if (cursorYTopRelativeToContainerArray[0] < scrollY) {
+                    scrollContainer.scrollTop = cursorYTopRelativeToContainerArray[0];
+                }
+                // 光标底部超出可视区域下方
+                else if (cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
+                    scrollContainer.scrollTop = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight;
+                }
+
+                if (cursorCenterYRelativeToContainerArray[0] < scrollY) {
+                    scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[0], behavior: 'smooth' });
+                } else if (cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
+                    scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] - containerViewableHeight, behavior: 'smooth' });
+                }
+            }
+
             if ((elementsAtTime.notes.length > 0) && (this.midiIds != elementsAtTime.notes)) {
                 //updatePageOrScrollTo(elementsAtTime.notes[0]);
                 for (let i = 0, len = this.midiIds.length; i < len; i++) {
