@@ -449,8 +449,8 @@ export class ResponsiveView extends VerovioView {
                 }
             }
 
+            //////////////////////////////////////////////////////////////////////////////////////////////
             const scrollContainer = this.svgWrapper.parentElement;
-            console.log('scrollContainer => ', scrollContainer.offsetTop, scrollContainer.offsetHeight, scrollContainer.scrollTop, scrollContainer.clientHeight)
             if (scrollContainer && cursorArray.length > 0) {
                 const containerTop = scrollContainer.offsetTop; // 容器相对于其 offsetParent 的顶部距离
                 const containerBottom = containerTop + scrollContainer.offsetHeight; // 容器底部的绝对位置
@@ -459,45 +459,58 @@ export class ResponsiveView extends VerovioView {
 
                 let cursorYTopRelativeToContainerArray = [];
                 let cursorYBottomRelativeToContainerArray = [];
-                let cursorCenterYRelativeToContainerArray = [];
+                // let cursorCenterYRelativeToContainerArray = [];
                 for (let k = 0; k < cursorArray.length; k++) {
                     const cursorYTopRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y1'));
                     const cursorYBottomRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y2'));
 
-                    const cursorCenterYRelativeToContainer = (parseFloat(cursorArray[k].getAttribute('y1')) + parseFloat(cursorArray[k].getAttribute('y2'))) / 2;
+                    // const cursorCenterYRelativeToContainer = (parseFloat(cursorArray[k].getAttribute('y1')) + parseFloat(cursorArray[k].getAttribute('y2'))) / 2;
 
                     cursorYTopRelativeToContainerArray.push(cursorYTopRelativeToContainer);
                     cursorYBottomRelativeToContainerArray.push(cursorYBottomRelativeToContainer);
-                    cursorCenterYRelativeToContainerArray.push(cursorCenterYRelativeToContainer);
+                    // cursorCenterYRelativeToContainerArray.push(cursorCenterYRelativeToContainer);
 
                 }
 
                 cursorYTopRelativeToContainerArray = cursorYTopRelativeToContainerArray.sort((a, b) => a - b);
                 cursorYBottomRelativeToContainerArray = cursorYBottomRelativeToContainerArray.sort((a, b) => a - b);
-                cursorCenterYRelativeToContainerArray = cursorCenterYRelativeToContainerArray.sort((a, b) => a - b);
+                // cursorCenterYRelativeToContainerArray = cursorCenterYRelativeToContainerArray.sort((a, b) => a - b);
 
-                console.log('****1 cursorYTopRelativeToContainerArray => ', cursorYTopRelativeToContainerArray)
-                console.log('****2 cursorYBottomRelativeToContainerArray => ', cursorYBottomRelativeToContainerArray)
-                console.log('****3 cursorCenterYRelativeToContainerArray => ', cursorCenterYRelativeToContainerArray)
-
-                console.log(' **** 4 scrollY => ', scrollY)
-                console.log(' **** 5 scrollY + containerViewableHeight => ', scrollY + containerViewableHeight)
-
+                let translateYOffset = 50
                 // 光标顶部超出可视区域上方
                 if (cursorYTopRelativeToContainerArray[0] < scrollY) {
-                    scrollContainer.scrollTop = cursorYTopRelativeToContainerArray[0];
+                    // scrollContainer.scrollTop = cursorYTopRelativeToContainerArray[0];
+                    let progressY = cursorYTopRelativeToContainerArray[0] - scrollY - translateYOffset;
+                    svg.style.transform = `translateY(-${progressY}px)`;
+                    for (let j = 0; j < cursorArray.length; j++) {
+                        let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
+                        let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
+                        cursorArray[j].setAttribute('y1', y1Val - progressY);
+                        cursorArray[j].setAttribute('y2', y2Val - progressY);
+                    }
                 }
                 // 光标底部超出可视区域下方
                 else if (cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
-                    scrollContainer.scrollTop = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight;
+                    // scrollContainer.scrollTop = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight;
+                    let progressY = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight - scrollY + translateYOffset;
+                    
+                    svg.style.transform = `translateY(-${progressY}px)`;
+
+                    for (let j = 0; j < cursorArray.length; j++) {
+                        let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
+                        let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
+                        cursorArray[j].setAttribute('y1', y1Val - progressY);
+                        cursorArray[j].setAttribute('y2', y2Val - progressY);
+                    }
                 }
 
-                if (cursorCenterYRelativeToContainerArray[0] < scrollY) {
-                    scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[0], behavior: 'smooth' });
-                } else if (cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
-                    scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] - containerViewableHeight, behavior: 'smooth' });
-                }
+                // if (cursorCenterYRelativeToContainerArray[0] < scrollY) {
+                //     scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[0], behavior: 'smooth' });
+                // } else if (cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
+                //     scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] - containerViewableHeight, behavior: 'smooth' });
+                // }
             }
+            //////////////////////////////////////////////////////////////////////////////////////////////
 
             if ((elementsAtTime.notes.length > 0) && (this.midiIds != elementsAtTime.notes)) {
                 //updatePageOrScrollTo(elementsAtTime.notes[0]);
@@ -505,20 +518,44 @@ export class ResponsiveView extends VerovioView {
                     let noteId = this.midiIds[i];
                     if (elementsAtTime.notes.indexOf(noteId) === -1) {
                         let note = this.svgWrapper.querySelector('#' + noteId);
-                        if (note)
+                        if (note) {
+                            note.style.fill = "";
                             note.style.filter = "";
+                            // note.style.stroke = "";
+                        }
                     }
                 }
                 ;
                 this.midiIds = elementsAtTime.notes;
                 for (let i = 0, len = this.midiIds.length; i < len; i++) {
                     let note = this.svgWrapper.querySelector('#' + this.midiIds[i]);
-                    if (note)
+                    if (note) {
+                        note.style.fill = "#e60000";
+                        // note.style.stroke = '#e60000';
                         note.style.filter = "url(#highlighting)";
+                    }
                     //if ( note ) animateStart.beginElement();
                 }
                 ;
             }
+
+            // console.log('******* elementsAtTime => ', elementsAtTime)
+
+            // if (elementsAtTime.measure) {
+            //     let measureid = elementsAtTime.measure
+            //     let measure = this.svgWrapper.querySelector('#' + measureid);
+                
+            //     if (measureid != this.measureid) {
+            //         if (this.measure) {
+            //             this.measure.style.fill = "";
+            //             // this.measure.style.stroke = "";
+            //         }
+            //         measure.style.fill = "purple";
+            //         // measure.style.stroke = '#e60000';
+            //         this.measure = measure
+            //         this.measureid = measureid
+            //     }
+            // }
         });
     }
     midiStop() {
