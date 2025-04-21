@@ -146,13 +146,12 @@ export class ResponsiveView extends VerovioView {
             let staffCheckStat = [];
             let measure = null;
 
+            let sq_cursor = null;
+
             if (elementsAtTime.notes.length > 0) {
                 
                 for (let i = 0; i < elementsAtTime.notes.length; i++) {
                     let note = this.svgWrapper.querySelector('#' + elementsAtTime.notes[i]);
-
-                    // cursor sliding on tempo
-                    // let noteTime = yield this.app.verovio.getTimeForElement(elementsAtTime.notes[i])
                     
                     if (note) {
                         const noteBBox = note.getBBox();
@@ -165,19 +164,19 @@ export class ResponsiveView extends VerovioView {
                         const cursorPoint = _point.matrixTransform(ctm);
             
                         let _measure = note.closest('g.measure');
-                        // let _system = _measure.closest('g.system');
+                        let _system = _measure.closest('g.system');
 
-                        // let _systemLtPoint = note.ownerSVGElement.createSVGPoint();
-                        // let _systemBBox = _system.getBBox()
-                        // _systemLtPoint.x = _systemBBox.x;
-                        // _systemLtPoint.y = _systemBBox.y;
+                        let _systemLtPoint = note.ownerSVGElement.createSVGPoint();
+                        let _systemBBox = _system.getBBox()
+                        _systemLtPoint.x = _systemBBox.x + _systemBBox.width / 2;
+                        _systemLtPoint.y = _systemBBox.y;
 
-                        // let _systemRbPoint = note.ownerSVGElement.createSVGPoint();
-                        // _systemRbPoint.x = _systemBBox.x + _systemBBox.width;
-                        // _systemRbPoint.y = _systemBBox.y + _systemBBox.height;
+                        let _systemRbPoint = note.ownerSVGElement.createSVGPoint();
+                        _systemRbPoint.x = _systemBBox.x;
+                        _systemRbPoint.y = _systemBBox.y + _systemBBox.height;
 
-                        // const systemLtPoint = _systemLtPoint.matrixTransform(ctm);
-                        // const systemRbPoint = _systemRbPoint.matrixTransform(ctm);
+                        const systemLtPoint = _systemLtPoint.matrixTransform(ctm);
+                        const systemRbPoint = _systemRbPoint.matrixTransform(ctm);
 
                         if (_measure != measure) {
                             measure = _measure;
@@ -188,83 +187,23 @@ export class ResponsiveView extends VerovioView {
 
                             staffGroups = _measure.querySelectorAll('g.staff')
 
-                            // if (!noteTimeProcessed) {
-                            //     staffGroups = _measure.querySelectorAll('g.staff')
-                            //     if (!this.staffGroups || this.staffGroups != staffGroups) {
-                            //         this.staffGroups = staffGroups
-                            //         this.measureTsNotes = []
-                            //     }
+                            sq_cursor = svg.querySelector('#playback-sq-cursor');
+                            if (!sq_cursor) {
+                                sq_cursor = document.createElementNS(svgNS, 'line');
+                                sq_cursor.setAttribute('id', 'playback-sq-cursor');
+                                sq_cursor.setAttribute('stroke', 'blue');
+                                sq_cursor.setAttribute('stroke-width', '2');
+                                sq_cursor.setAttribute('opacity', '0.5');
+                                
+                                svg.appendChild(sq_cursor);
+                            }
 
-                            //     sq_cursor = svg.querySelector('#playback-sq-cursor');
-                            //     if (!sq_cursor) {
-                            //         sq_cursor = document.createElementNS(svgNS, 'line');
-                            //         sq_cursor.setAttribute('id', 'playback-sq-cursor');
-                            //         sq_cursor.setAttribute('stroke', 'blue');
-                            //         sq_cursor.setAttribute('stroke-width', '2');
-                            //         sq_cursor.setAttribute('opacity', '0.5');
-                                    
-                            //         svg.appendChild(sq_cursor);
-                            //     }
-                            // }
+                            sq_cursor.setAttribute('x1', cursorPoint.x);
+                            sq_cursor.setAttribute('x2', cursorPoint.x);
+                            sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
+                            sq_cursor.setAttribute('y2', systemRbPoint.y - toolbarHeight);
 
                             for (let k = 0; k < staffGroups.length; k++) {
-                                // if (!noteTimeProcessed) {
-                                //     let singleStaffGroup = staffGroups[k];
-                                //     let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
-                                //     if (!this.measureTsNotes) {
-                                //         this.measureTsNotes = []
-                                //     }
-    
-                                //     if (singleStaffNotes) {
-                                //         for (let j = 0; j < singleStaffNotes.length; j++) {
-                                //             let singleStaffNoteId = singleStaffNotes[j].id
-                                //             let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                //             let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
-                                //             let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
-                                //             _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                //             _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-
-                                //             const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                            
-                                //             this.measureTsNotes.push({
-                                //                 id: singleStaffNoteId,
-                                //                 time: singleStaffNoteTime,
-                                //                 x: singleStaffNotePoint.x,
-                                //                 y1: systemLtPoint.y - toolbarHeight,
-                                //                 y2: systemRbPoint.y - toolbarHeight
-                                //             })
-                                //         }
-                                //     }
-                                    
-                                //     let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
-                                //     let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
-                                //     let singleStaffRests = []
-                                //     if (singleStaffRests1) {
-                                //         singleStaffRests.push(...singleStaffRests1)
-                                //     }
-                                //     if (singleStaffRests2) {
-                                //         singleStaffRests.push(...singleStaffRests2)
-                                //     }
-
-                                //     for (let j = 0; j < singleStaffRests.length; j++) {
-                                //         let singleStaffNoteId = singleStaffRests[j].id
-                                //         let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                //         let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
-                                //         let singleStaffNoteBBox = singleStaffRests[j].getBBox()
-                                //         _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                //         _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-
-                                //         const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                        
-                                //         this.measureTsNotes.push({
-                                //             id: singleStaffNoteId,
-                                //             time: singleStaffNoteTime,
-                                //             x: singleStaffNotePoint.x,
-                                //             y1: systemLtPoint.y - toolbarHeight,
-                                //             y2: systemRbPoint.y - toolbarHeight
-                                //         })
-                                //     }
-                                // }
 
                                 let __cursor = svg.querySelector('#playback-cursor' + (k + 1));
                                 if (!__cursor) {
@@ -280,120 +219,6 @@ export class ResponsiveView extends VerovioView {
                                 cursorPositioned.push(false);
                                 staffCheckStat.push(false);
                             }
-
-                            // if (!noteTimeProcessed) {
-                            //     this.measureTsNotes = this.measureTsNotes.sort((a, b) => a.time < b.time)
-                            //     if (this.measureTsNotes.length > 0) {
-                            //         noteTimeProcessed = true
-                            //     }
-                            // }
-
-                            // if (!nextNoteTimeProcessed) {
-                            //     let measureGroups1 = _system.querySelectorAll('g.measure')
-                            //     if (measureGroups1) {
-                            //         let _systemMeasures = []
-                            //         for (let i = 0; i < measureGroups1.length; i++) {
-                            //             let delgatemeasure1 = measureGroups1[i]
-                            //             if (delgatemeasure1.id != measure.id) {
-                            //                 let delgatenote1 = delgatemeasure1.querySelector('g.note')
-                                        
-                            //                 // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
-                            //                 let _delgatenotePoint1 = note.ownerSVGElement.createSVGPoint();
-                            //                 let delgatenotePointBBox1 = delgatenote1.getBBox()
-                            //                 _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
-                            //                 _delgatenotePoint1.y = delgatenotePointBBox1.y;
-
-                            //                 const delgatenotePoint1 = _delgatenotePoint1.matrixTransform(ctm);
-                            //                 _systemMeasures.push({
-                            //                     measure: delgatemeasure1,
-                            //                     // time: delgatenoteTime1,
-                            //                     x: delgatenotePoint1.x
-                            //                 })
-                            //             }
-                            //         }
-                            //         _systemMeasures = _systemMeasures.sort((a, b) => a.x < b.x)
-
-                            //         if (_systemMeasures.length > 0) {
-                            //             let nextMeasure = _systemMeasures[0].measure
-
-                            //             let nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
-                            //             if (!this.nextstaffGroups || this.nextstaffGroups != nextstaffGroups) {
-                            //                 if (nextstaffGroups) {
-                            //                     this.nextstaffGroups = nextstaffGroups
-                            //                 }
-                            //                 this.nextmeasureTsNotes = []
-                            //             }
-                            //         }
-
-                            //         if (this.nextstaffGroups) {
-                            //             for (let k = 0; k < this.nextstaffGroups.length; k++) {
-                                        
-                            //                 let singleStaffGroup = this.nextstaffGroups[k];
-                            //                 let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
-                                            
-                            //                 if (singleStaffNotes) {
-                            //                     for (let j = 0; j < singleStaffNotes.length; j++) {
-                            //                         let singleStaffNoteId = singleStaffNotes[j].id
-                            //                         let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                            //                         let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
-                            //                         let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
-                            //                         _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                            //                         _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-        
-                            //                         const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                    
-                            //                         this.nextmeasureTsNotes.push({
-                            //                             id: singleStaffNoteId,
-                            //                             time: singleStaffNoteTime,
-                            //                             x: singleStaffNotePoint.x,
-                            //                             y1: systemLtPoint.y - toolbarHeight,
-                            //                             y2: systemRbPoint.y - toolbarHeight
-                            //                         })
-                            //                     }
-                            //                 }
-
-
-                            //                 let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
-                            //                 let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
-                            //                 let singleStaffRests = []
-                            //                 if (singleStaffRests1) {
-                            //                     singleStaffRests.push(...singleStaffRests1)
-                            //                 }
-                            //                 if (singleStaffRests2) {
-                            //                     singleStaffRests.push(...singleStaffRests2)
-                            //                 }
-
-                            //                 for (let j = 0; j < singleStaffRests.length; j++) {
-                            //                     let singleStaffNoteId = singleStaffRests[j].id
-                            //                     let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                            //                     let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
-                            //                     let singleStaffNoteBBox = singleStaffRests[j].getBBox()
-                            //                     _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                            //                     _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-
-                            //                     const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                
-                            //                     this.nextmeasureTsNotes.push({
-                            //                         id: singleStaffNoteId,
-                            //                         time: singleStaffNoteTime,
-                            //                         x: singleStaffNotePoint.x,
-                            //                         y1: systemLtPoint.y - toolbarHeight,
-                            //                         y2: systemRbPoint.y - toolbarHeight
-                            //                     })
-                            //                 }
-                                            
-                            //             }
-                            //         }
-                            //     }
-
-                            //     if (!this.nextmeasureTsNotes) {
-                            //         this.nextmeasureTsNotes = []
-                            //     }
-                            //     this.nextmeasureTsNotes = this.nextmeasureTsNotes.sort((a, b) => a.time < b.time)
-                            //     if (this.nextmeasureTsNotes.length > 0) {
-                            //         nextNoteTimeProcessed = true
-                            //     }
-                            // }
                         }
 
 
@@ -440,6 +265,463 @@ export class ResponsiveView extends VerovioView {
                     }
                 }
                 
+            } else if (elementsAtTime.rests && elementsAtTime.rests.length > 0) { // rest mscore-beam-none ;   rest;    mRest
+                for (let i = 0; i < elementsAtTime.rests.length; i++) {
+                    let note = this.svgWrapper.querySelector('#' + elementsAtTime.rests[i]);
+                    if (note) {
+                        let currNoteTime = yield this.app.verovio.getTimeForElement(note.id)
+                        
+                        // if (currNoteTime == time) {
+
+                        const ctm = note.getScreenCTM(); 
+
+                        const _point = note.ownerSVGElement.createSVGPoint();
+
+                        let noteBBox = note.getBBox();
+
+                        _point.x = noteBBox.x + noteBBox.width / 2;
+                        _point.y = noteBBox.y + noteBBox.height;
+
+                        const cursorPoint = _point.matrixTransform(ctm);
+
+                        let _system = note.closest('g.system');
+
+                        let _systemLtPoint = note.ownerSVGElement.createSVGPoint();
+                        let _systemBBox = _system.getBBox()
+                        _systemLtPoint.x = _systemBBox.x + _systemBBox.width / 2;
+                        _systemLtPoint.y = _systemBBox.y;
+
+                        let _systemRbPoint = note.ownerSVGElement.createSVGPoint();
+                        _systemRbPoint.x = _systemBBox.x;
+                        _systemRbPoint.y = _systemBBox.y + _systemBBox.height;
+                        
+                        const systemLtPoint = _systemLtPoint.matrixTransform(ctm);
+                        const systemRbPoint = _systemRbPoint.matrixTransform(ctm);
+                        sq_cursor = svg.querySelector('#playback-sq-cursor');
+                        if (!sq_cursor) {
+                            sq_cursor = document.createElementNS(svgNS, 'line');
+                            sq_cursor.setAttribute('id', 'playback-sq-cursor');
+                            sq_cursor.setAttribute('stroke', 'blue');
+                            sq_cursor.setAttribute('stroke-width', '2');
+                            sq_cursor.setAttribute('opacity', '0.5');
+                            
+                            svg.appendChild(sq_cursor);
+                        }
+
+                        sq_cursor.setAttribute('x1', cursorPoint.x);
+                        sq_cursor.setAttribute('x2', cursorPoint.x);
+                        sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
+                        sq_cursor.setAttribute('y2', systemRbPoint.y - toolbarHeight);
+
+                        break;
+                        // }
+
+                    }
+                }
+            } else {
+                if (elementsAtTime.measure) {
+                    let _measure = this.svgWrapper.querySelector('#' + elementsAtTime.measure);
+                    if (_measure) {
+                        const ctm = _measure.getScreenCTM(); 
+
+                        let _barline = _measure.querySelector('g.barLine');
+                        let _barlinePoint = _measure.ownerSVGElement.createSVGPoint();
+                        let _barlineBBox = _barline.getBBox();
+                        _barlinePoint.x = _barlineBBox.x
+                        _barlinePoint.y = _barlineBBox.y
+                        const barlinePoint = _barlinePoint.matrixTransform(ctm);
+
+                        let _system = _measure.closest('g.system');
+
+                        let _systemLtPoint = _measure.ownerSVGElement.createSVGPoint();
+                        let _systemBBox = _system.getBBox()
+                        _systemLtPoint.x = _systemBBox.x + _systemBBox.width / 2;
+                        _systemLtPoint.y = _systemBBox.y;
+
+                        let _systemRbPoint = _measure.ownerSVGElement.createSVGPoint();
+                        _systemRbPoint.x = _systemBBox.x;
+                        _systemRbPoint.y = _systemBBox.y + _systemBBox.height;
+
+                        const systemLtPoint = _systemLtPoint.matrixTransform(ctm);
+                        const systemRbPoint = _systemRbPoint.matrixTransform(ctm);
+                        
+                        let _staffGroups = _measure.querySelectorAll('g.staff')
+                        let measureTsNotes = []
+
+                        sq_cursor = svg.querySelector('#playback-sq-cursor');
+                        if (!sq_cursor) {
+                            sq_cursor = document.createElementNS(svgNS, 'line');
+                            sq_cursor.setAttribute('id', 'playback-sq-cursor');
+                            sq_cursor.setAttribute('stroke', 'blue');
+                            sq_cursor.setAttribute('stroke-width', '2');
+                            sq_cursor.setAttribute('opacity', '0.5');
+                            
+                            svg.appendChild(sq_cursor);
+                        }
+
+                        let currNoteIndex = -1;
+
+                        for (let k = 0; k < _staffGroups.length; k++) {
+                            
+                            let singleStaffGroup = _staffGroups[k];
+                            let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
+
+                            if (singleStaffNotes) {
+                                for (let j = 0; j < singleStaffNotes.length; j++) {
+                                    let singleStaffNoteId = singleStaffNotes[j].id
+                                    let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
+                                    let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                    let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
+                                    _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
+                                    _singleStaffNotePoint.y = singleStaffNoteBBox.y;
+
+                                    const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
+                                    
+                                    measureTsNotes.push({
+                                        id: singleStaffNoteId,
+                                        time: singleStaffNoteTime,
+                                        x: singleStaffNotePoint.x,
+                                        y1: systemLtPoint.y - toolbarHeight,
+                                        y2: systemRbPoint.y - toolbarHeight
+                                    })
+                                }
+                            }
+                            
+                            let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
+                            let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
+                            let singleStaffRests = []
+                            if (singleStaffRests1) {
+                                singleStaffRests.push(...singleStaffRests1)
+                            }
+                            if (singleStaffRests2) {
+                                singleStaffRests.push(...singleStaffRests2)
+                            }
+
+                            for (let j = 0; j < singleStaffRests.length; j++) {
+                                let singleStaffNoteId = singleStaffRests[j].id
+                                let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
+                                let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                let singleStaffNoteBBox = singleStaffRests[j].getBBox()
+                                _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
+                                _singleStaffNotePoint.y = singleStaffNoteBBox.y;
+
+                                const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
+                                
+                                measureTsNotes.push({
+                                    id: singleStaffNoteId,
+                                    time: singleStaffNoteTime,
+                                    x: singleStaffNotePoint.x,
+                                    y1: systemLtPoint.y - toolbarHeight,
+                                    y2: systemRbPoint.y - toolbarHeight
+                                })
+                            }
+                        
+                        }
+
+                        
+                        measureTsNotes = measureTsNotes.sort((a, b) => a.time < b.time)
+
+                        for (let i = 0; i < measureTsNotes.length; i++) {
+                            if (measureTsNotes.time > time) {
+                                if (i > 0) {
+                                    currNoteIndex = i - 1;
+                                } 
+                                break;
+                            }
+                        }
+
+                        let nextFlag = false;
+                        if (currNoteIndex >= 0) {
+                            if (currNoteIndex < measureTsNotes.length - 1) {
+                                let disx = measureTsNotes[currNoteIndex + 1].x - measureTsNotes[currNoteIndex].x
+                                let distime = measureTsNotes[currNoteIndex + 1].time - measureTsNotes[currNoteIndex].time
+                                let destx = measureTsNotes[currNoteIndex].x + disx * (time - measureTsNotes[currNoteIndex].time) / distime
+                                sq_cursor.setAttribute('x1', destx);
+                                sq_cursor.setAttribute('x2', destx);
+                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                
+                            } else {
+                                nextFlag = true;
+                            }
+                        }
+                        
+                        if (nextFlag) {
+                            let _systemMeasures = [];
+                            let nextMeasure = null;
+                            let nextstaffGroups = [];
+                            let measureGroups1 = _system.querySelectorAll('g.measure').filter(item => item.id != _measure.id);
+                            let nextmeasureTsNotes = []
+                            if (measureGroups1) {
+                                for (let i = 0; i < measureGroups1.length; i++) {
+                                    let delgatemeasure1 = measureGroups1[i]
+                                    let delgatenote1 = delgatemeasure1.querySelector('g.note')
+                                    
+                                    // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
+                                    let _delgatenotePoint1 = _measure.ownerSVGElement.createSVGPoint();
+                                    let delgatenotePointBBox1 = delgatenote1.getBBox()
+                                    _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
+                                    _delgatenotePoint1.y = delgatenotePointBBox1.y;
+
+                                    const delgatenotePoint1 = _delgatenotePoint1.matrixTransform(ctm);
+                                    _systemMeasures.push({
+                                        measure: delgatemeasure1,
+                                        // time: delgatenoteTime1,
+                                        x: delgatenotePoint1.x
+                                    })
+                                }
+                                _systemMeasures = _systemMeasures.filter(item => item.x > barlinePoint.x).sort((a, b) => a.x < b.x)
+
+                                if (_systemMeasures.length > 0) {
+                                    nextMeasure = _systemMeasures[0].measure
+
+                                    nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
+                                } else {
+                                    let page = _system.closest('g.page-margin');
+                                    if (page) {
+                                        let _systemGroups = page.querySelectorAll('g.system').filter(item => item.id != _system.id);
+                                        let _delgateSystemNotes = [];
+                                        for (let j = 0; j < _systemGroups.length; j++) {
+                                            let _singleSystem = _systemGroups[j];
+
+                                            let delgateSystemNote = _singleSystem.querySelector('g.note');
+                                            if (!delgateSystemNote) {
+                                                delgateSystemNote = _singleSystem.querySelector('g.rest');
+                                            }
+                                            if (!delgateSystemNote) {
+                                                delgateSystemNote = _singleSystem.querySelector('g.mRest');
+                                            }
+
+                                            if (delgateSystemNote) {
+                                                let _delgateSystemNoteTime = yield this.app.verovio.getTimeForElement(delgateSystemNote.id)
+                                                _delgateSystemNotes.push({
+                                                    system: _singleSystem,
+                                                    time: _delgateSystemNoteTime
+                                                })
+                                            }
+                                        }
+                                        _delgateSystemNotes = _delgateSystemNotes.sort((a, b) => a.time < b.time)
+                                        if (_delgateSystemNotes.length > 0) {
+                                            measureGroups1 = _delgateSystemNotes[0].querySelectorAll('g.measure').filter(item => item.id != _measure.id);
+                                            if (measureGroups1) {
+                                                for (let i = 0; i < measureGroups1.length; i++) {
+                                                    let delgatemeasure1 = measureGroups1[i]
+                                                    let delgatenote1 = delgatemeasure1.querySelector('g.note')
+                                                    
+                                                    // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
+                                                    let _delgatenotePoint1 = _measure.ownerSVGElement.createSVGPoint();
+                                                    let delgatenotePointBBox1 = delgatenote1.getBBox()
+                                                    _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
+                                                    _delgatenotePoint1.y = delgatenotePointBBox1.y;
+                
+                                                    const delgatenotePoint1 = _delgatenotePoint1.matrixTransform(ctm);
+                                                    _systemMeasures.push({
+                                                        measure: delgatemeasure1,
+                                                        // time: delgatenoteTime1,
+                                                        x: delgatenotePoint1.x
+                                                    })
+                                                }
+                
+                                                if (_systemMeasures.length > 0) {
+                                                    nextMeasure = _systemMeasures[0].measure
+                
+                                                    nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
+                                                } 
+                
+                                                if (nextstaffGroups) {
+                                                    for (let k = 0; k < nextstaffGroups.length; k++) {
+                                                    
+                                                        let singleStaffGroup = nextstaffGroups[k];
+                                                        let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
+                                                        
+                                                        if (singleStaffNotes) {
+                                                            for (let j = 0; j < singleStaffNotes.length; j++) {
+                                                                let singleStaffNoteId = singleStaffNotes[j].id
+                                                                let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
+                                                                let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                                                let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
+                                                                _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
+                                                                _singleStaffNotePoint.y = singleStaffNoteBBox.y;
+                
+                                                                const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
+                                                                
+                                                                nextmeasureTsNotes.push({
+                                                                    id: singleStaffNoteId,
+                                                                    time: singleStaffNoteTime,
+                                                                    x: singleStaffNotePoint.x,
+                                                                    y1: systemLtPoint.y - toolbarHeight,
+                                                                    y2: systemRbPoint.y - toolbarHeight
+                                                                })
+                                                            }
+                                                        }
+                
+                
+                                                        let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
+                                                        let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
+                                                        let singleStaffRests = []
+                                                        if (singleStaffRests1) {
+                                                            singleStaffRests.push(...singleStaffRests1)
+                                                        }
+                                                        if (singleStaffRests2) {
+                                                            singleStaffRests.push(...singleStaffRests2)
+                                                        }
+                
+                                                        for (let j = 0; j < singleStaffRests.length; j++) {
+                                                            let singleStaffNoteId = singleStaffRests[j].id
+                                                            let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
+                                                            let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                                            let singleStaffNoteBBox = singleStaffRests[j].getBBox()
+                                                            _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
+                                                            _singleStaffNotePoint.y = singleStaffNoteBBox.y;
+                
+                                                            const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
+                                                            
+                                                            nextmeasureTsNotes.push({
+                                                                id: singleStaffNoteId,
+                                                                time: singleStaffNoteTime,
+                                                                x: singleStaffNotePoint.x,
+                                                                y1: systemLtPoint.y - toolbarHeight,
+                                                                y2: systemRbPoint.y - toolbarHeight
+                                                            })
+                                                        }
+                                                        
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (nextstaffGroups) {
+                                    for (let k = 0; k < nextstaffGroups.length; k++) {
+                                    
+                                        let singleStaffGroup = nextstaffGroups[k];
+                                        let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
+                                        
+                                        if (singleStaffNotes) {
+                                            for (let j = 0; j < singleStaffNotes.length; j++) {
+                                                let singleStaffNoteId = singleStaffNotes[j].id
+                                                let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
+                                                let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                                let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
+                                                _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
+                                                _singleStaffNotePoint.y = singleStaffNoteBBox.y;
+
+                                                const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
+                                                
+                                                nextmeasureTsNotes.push({
+                                                    id: singleStaffNoteId,
+                                                    time: singleStaffNoteTime,
+                                                    x: singleStaffNotePoint.x,
+                                                    y1: systemLtPoint.y - toolbarHeight,
+                                                    y2: systemRbPoint.y - toolbarHeight
+                                                })
+                                            }
+                                        }
+
+
+                                        let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
+                                        let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
+                                        let singleStaffRests = []
+                                        if (singleStaffRests1) {
+                                            singleStaffRests.push(...singleStaffRests1)
+                                        }
+                                        if (singleStaffRests2) {
+                                            singleStaffRests.push(...singleStaffRests2)
+                                        }
+
+                                        for (let j = 0; j < singleStaffRests.length; j++) {
+                                            let singleStaffNoteId = singleStaffRests[j].id
+                                            let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
+                                            let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                            let singleStaffNoteBBox = singleStaffRests[j].getBBox()
+                                            _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
+                                            _singleStaffNotePoint.y = singleStaffNoteBBox.y;
+
+                                            const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
+                                            
+                                            nextmeasureTsNotes.push({
+                                                id: singleStaffNoteId,
+                                                time: singleStaffNoteTime,
+                                                x: singleStaffNotePoint.x,
+                                                y1: systemLtPoint.y - toolbarHeight,
+                                                y2: systemRbPoint.y - toolbarHeight
+                                            })
+                                        }
+                                        
+                                    }
+                                }
+                            }
+
+                            nextmeasureTsNotes = nextmeasureTsNotes.sort((a, b) => a.time < b.time)
+
+                            if (nextmeasureTsNotes.length > 0) {
+                                sq_cursor = svg.querySelector('#playback-sq-cursor');
+                                if (!sq_cursor) {
+                                    sq_cursor = document.createElementNS(svgNS, 'line');
+                                    sq_cursor.setAttribute('id', 'playback-sq-cursor');
+                                    sq_cursor.setAttribute('stroke', 'blue');
+                                    sq_cursor.setAttribute('stroke-width', '2');
+                                    sq_cursor.setAttribute('opacity', '0.5');
+                                    
+                                    svg.appendChild(sq_cursor);
+                                }
+                                
+                                let disx = barlinePoint.x - measureTsNotes[currNoteIndex].x
+                                let distime = (nextmeasureTsNotes[0].time - measureTsNotes[currNoteIndex].time) / 2
+
+                                let destx = measureTsNotes[currNoteIndex].x + disx * (time - measureTsNotes[currNoteIndex].time) / distime
+                                sq_cursor.setAttribute('x1', destx);
+                                sq_cursor.setAttribute('x2', destx);
+                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+
+                                this.measure_barlinegap_time = measureTsNotes[currNoteIndex].time
+                                this.measure_barlinegap_x = barlinePoint.x
+                            } else if (currNoteIndex < 0) {
+                                if (!this.measure_barlinegap_time) {
+                                    this.measure_barlinegap_time = 0.0001;
+                                }
+                                if (this.measure_barlinegap_time == 0.0001) {
+                                    if (measureTsNotes.length > 0) {
+                                        let disx = measureTsNotes[0].x;
+                                        let distime = measureTsNotes[0].time - this.measure_barlinegap_time;
+
+                                        let _grpSym = _system.querySelector('g.grpSym');
+                                        if (_grpSym) {
+                                            let _startBracePoint = _measure.ownerSVGElement.createSVGPoint();
+                                            let _startBracePointBBox = _grpSym.getBBox()
+                                            _startBracePoint.x = _startBracePointBBox.x;
+                                            _startBracePoint.y = _startBracePointBBox.y;
+
+                                            const startBracePoint = _startBracePoint.matrixTransform(ctm);
+
+                                            let destx = startBracePoint.x + disx * (time - this.measure_barlinegap_time) / distime
+                                            sq_cursor.setAttribute('x1', destx);
+                                            sq_cursor.setAttribute('x2', destx);
+                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                        }
+                                    }
+                                } else {
+                                    if (measureTsNotes.length > 0) {
+                                        let disx = measureTsNotes[0].x - measure_barlinegap_x;
+                                        let distime = (measureTsNotes[0].time - this.measure_barlinegap_time) / 2
+
+                                        let destx = this.measure_barlinegap_x + disx * (time - this.measure_barlinegap_time) / distime
+                                        sq_cursor.setAttribute('x1', destx);
+                                        sq_cursor.setAttribute('x2', destx);
+                                        sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                        sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                    }
+                                    
+                                }
+                            }
+                        }
+
+                    }
+                    
+                }
             }
 
             for (let l = 0; l < cursorPositioned.length; l++) {
@@ -538,8 +820,6 @@ export class ResponsiveView extends VerovioView {
                 }
                 ;
             }
-
-            // console.log('******* elementsAtTime => ', elementsAtTime)
 
             // if (elementsAtTime.measure) {
             //     let measureid = elementsAtTime.measure
