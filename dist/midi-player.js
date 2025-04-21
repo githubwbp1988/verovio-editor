@@ -50,6 +50,7 @@ export class MidiPlayer {
         this.midiToolbar.updateAll();
         if (this.view)
             this.view.midiStop();
+            this.view.midiReset();
     }
     pause() {
         this.midiPlayerElement.stop();
@@ -94,6 +95,7 @@ export class MidiPlayer {
             this.midiToolbar.updateAll();
             if (this.view)
                 this.view.midiStop();
+                this.view.midiReset();
         }
     }
     ////////////////////////////////////////////////////////////////////////
