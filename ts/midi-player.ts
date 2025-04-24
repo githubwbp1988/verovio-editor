@@ -114,6 +114,14 @@ export class MidiPlayer {
     }
 
     onUpdate(time: number): void {
+        if (time > this.totalTime) {
+            this.midiToolbar.pausing = false;
+            this.midiToolbar.playing = false;
+            this.midiToolbar.updateAll();
+
+            if (this.view) this.view.midiStop();
+            return;
+        }
         this.currentTime = time;
         this.currentTimeStr = this.samplesToTime(this.currentTime);
 

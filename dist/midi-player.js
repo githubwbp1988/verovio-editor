@@ -62,7 +62,6 @@ export class MidiPlayer {
         if (this.view) {
             this.view.midiStop();
             this.view.midiReset();
-            this.view.tempoStop();
         }
     }
     pause() {
@@ -83,6 +82,10 @@ export class MidiPlayer {
         this.stopTimer();
         this.midiPlayerElement.currentTime = (seekTime / 1000);
         // play called by html-midid-player callback
+
+        if (this.view) {
+            this.view.seekTempoProcess();
+        }
     }
     ////////////////////////////////////////////////////////////////////////
     // Internal methods for updating the UI
@@ -112,7 +115,6 @@ export class MidiPlayer {
             if (this.view) {
                 this.view.midiStop();
                 this.view.midiReset();
-                this.view.tempoStop();
             }
         }
     }
