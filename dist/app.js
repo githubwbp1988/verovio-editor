@@ -401,6 +401,8 @@ export class App {
                 }
             });
             this.view.customEventManager.dispatch(event);
+
+            this.midiPlayer.initTempo();
         });
     }
     applySelection() {

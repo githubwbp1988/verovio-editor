@@ -22,6 +22,13 @@ export class MidiPlayer {
     ////////////////////////////////////////////////////////////////////////
     // Public method to be called by the user
     ////////////////////////////////////////////////////////////////////////
+
+    initTempo() {
+        if (this.view) {
+            this.view.initMetronomeAudio();
+        }
+    }
+
     playFile(midiFile) {
         this.midiPlayerElement.setAttribute('src', midiFile);
         // play called by html-midi-player callback
@@ -37,6 +44,10 @@ export class MidiPlayer {
         this.midiToolbar.pausing = false;
         this.midiToolbar.playing = true;
         this.midiToolbar.updateAll();
+
+        if (this.view) {
+            this.view.tempoStart();
+        }
     }
     stop() {
         this.currentTime = 0;
@@ -48,9 +59,11 @@ export class MidiPlayer {
         this.midiToolbar.pausing = false;
         this.midiToolbar.playing = false;
         this.midiToolbar.updateAll();
-        if (this.view)
+        if (this.view) {
             this.view.midiStop();
             this.view.midiReset();
+            this.view.tempoStop();
+        }
     }
     pause() {
         this.midiPlayerElement.stop();
@@ -58,8 +71,10 @@ export class MidiPlayer {
         this.midiToolbar.pausing = true;
         this.midiToolbar.playing = false;
         this.midiToolbar.updateAll();
-        if (this.view)
+        if (this.view) {
             this.view.midiStop();
+            this.view.tempoStop();
+        }
     }
     seekToPercent(percent) {
         if (!this.midiPlayerElement.playing)
@@ -84,8 +99,9 @@ export class MidiPlayer {
         this.currentTime = time;
         this.currentTimeStr = this.samplesToTime(this.currentTime);
         this.midiToolbar.updateProgressBar();
-        if (this.view)
+        if (this.view) {
             this.view.midiUpdate(time);
+        }
     }
     onStop(e) {
         // Custom event from the html-midi-player
@@ -93,9 +109,11 @@ export class MidiPlayer {
             this.midiToolbar.pausing = false;
             this.midiToolbar.playing = false;
             this.midiToolbar.updateAll();
-            if (this.view)
+            if (this.view) {
                 this.view.midiStop();
                 this.view.midiReset();
+                this.view.tempoStop();
+            }
         }
     }
     ////////////////////////////////////////////////////////////////////////
@@ -115,6 +133,7 @@ export class MidiPlayer {
             this.progressBarTimer = null;
         }
     }
+
     samplesToTime(time) {
         let timeInSec = Math.floor(time / 1000);
         let sec = timeInSec % 60;

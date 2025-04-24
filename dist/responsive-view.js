@@ -122,12 +122,60 @@ export class ResponsiveView extends VerovioView {
             sq_cursor.setAttribute('x1', -100);
             sq_cursor.setAttribute('x2', -100);
         }
-        this.score_note_begin = false;
+    }
+    tempoStop() {
+        this.tempoPlayFlag = false;
+    }
+    tempoStart() {
+        this.tempoPlayFlag = true;
+    }
+    initMetronomeAudio() {
+        this.tempoPlayFlag = true;
+        let self = this
+        if (window.AudioContext) {
+            if (!this.audioContext) {
+                this.audioContext = new AudioContext();    
+            }
+            if (!this.tempoSoundBuffer) {
+                this.loadTempoSound('/music/sounds/audio_tempo.mp3', (buffer) => { 
+                    self.tempoSoundBuffer = buffer; 
+                });
+            }
+        } else {
+            alert('Web Audio API is not supported.');
+        }
+    }
+    playTempo() {
+        if (this.tickstack && this.tickstack.length > 0) {
+            this.tickstack.splice(0, 1);
+        }
+        
+        if (!this.tempoPlayFlag) {
+            return;
+        }
+        
+        if (!this.audioContext || !this.tempoSoundBuffer) return;
+        
+        const source = this.audioContext.createBufferSource();
+        source.buffer = this.tempoSoundBuffer;
+        source.connect(this.audioContext.destination);
+        source.start(this.tick / 1000);
+    }
+    
+    loadTempoSound(url, callback) {
+        let self = this;
+        fetch(url)
+            .then(response => response.arrayBuffer())
+            .then(data => {
+                return self.audioContext.decodeAudioData(data)
+            }).then(buffer => callback(buffer))
+            .catch(error => console.error('Error loading sound:', error));
     }
     midiUpdate(time) {
         return __awaiter(this, void 0, void 0, function* () {
             //const animateStart = document.getElementById( "highlighting-start" );
             let vrvTime = time;
+
             let elementsAtTime = yield this.app.verovio.getElementsAtTime(vrvTime);
             if (Object.keys(elementsAtTime).length === 0 || elementsAtTime.page === 0) {
                 //console.debug( "Nothing returned by getElementsAtTime" );
@@ -149,6 +197,47 @@ export class ResponsiveView extends VerovioView {
             const ___count = 64;
             const sq_cursor_flash = true;
 
+            let self = this;
+
+            if (this.tempoPlayFlag) {
+                let tempo_json_str = yield this.app.verovio.getTempo(vrvTime);
+                let tempoObj = JSON.parse(tempo_json_str)
+                if (tempoObj) {
+                    this.measureBeatsCount = tempoObj.count;
+                    if (!this.tempobegin) {
+                        this.tempobegin = true;
+                        this.measureBegin = tempoObj.begin;
+                        this.tick = this.measureBegin;
+                        this.tickstack = [];
+                        this.tickstack.push(this.tick);
+                        this.playTempo();
+                        for (let i = 1; i < this.measureBeatsCount; i++) {
+                            if (this.tickstack && this.tickstack.indexOf(self.measureBegin + tempoObj.beatduration * i) == -1) {
+                                this.tickstack.push(this.measureBegin + tempoObj.beatduration * i);
+                                setTimeout(() => {
+                                    self.tick = self.measureBegin + tempoObj.beatduration * i;
+                                    self.playTempo();
+                                }, tempoObj.beatduration * i);
+                            }
+                        }
+                    } else if (tempoObj.begin != this.measureBegin) {
+                        this.measureBegin = tempoObj.begin;
+                        this.tick = tempoObj.begin;
+                        this.tickstack.push(this.tick);
+                        this.playTempo();
+                        for (let i = 1; i < this.measureBeatsCount; i++) {
+                            if (this.tickstack && this.tickstack.indexOf(self.measureBegin + tempoObj.beatduration * i) == -1) {
+                                this.tickstack.push(this.measureBegin + tempoObj.beatduration * i);
+                                setTimeout(() => {
+                                    self.tick = self.measureBegin + tempoObj.beatduration * i;
+                                    self.playTempo();
+                                }, tempoObj.beatduration * i);
+                            }
+                        }
+                    }
+                }
+            }
+
             let _toolbar = document.querySelector('.vrv-toolbar');
             let toolbarHeight = _toolbar.getBoundingClientRect().height;
 
@@ -161,12 +250,10 @@ export class ResponsiveView extends VerovioView {
             let sq_cursor = null;
 
             if (elementsAtTime.notes.length > 0) {
-                
                 for (let i = 0; i < elementsAtTime.notes.length; i++) {
                     let note = this.svgWrapper.querySelector('#' + elementsAtTime.notes[i]);
                     
                     if (note) {
-                        this.score_note_begin = true;
                         const noteBBox = note.getBBox();
                         const ctm = note.getScreenCTM();                // 当前元素的坐标变换矩阵
                         const _point = note.ownerSVGElement.createSVGPoint();
@@ -303,7 +390,7 @@ export class ResponsiveView extends VerovioView {
                                 measureTsNotes = measureTsNotes.sort((a, b) => a.time < b.time)
         
                                 for (let i = 0; i < measureTsNotes.length; i++) {
-                                    if (measureTsNotes[i].time > time) {
+                                    if (measureTsNotes[i].time > time && measureTsNotes[i].x > cursorPoint.x) {
                                         nextNoteIndex = i;
                                         break;
                                     }
@@ -735,9 +822,7 @@ export class ResponsiveView extends VerovioView {
                         if (sq_cursor.getAttribute('y1')) {
                             sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
                         }
-
                         if (systemLtPoint.y - toolbarHeight == sq_cursor_rawY && cursorPoint.x > sq_cursor_rawX || systemLtPoint.y - toolbarHeight != sq_cursor_rawY) {
-                        
                             sq_cursor.setAttribute('x1', cursorPoint.x);
                             sq_cursor.setAttribute('x2', cursorPoint.x);
                             sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
@@ -748,9 +833,9 @@ export class ResponsiveView extends VerovioView {
                             let _measure = note.closest('g.measure');
 
                             if (_measure) {
-        
+
                                 let _barline = _measure.querySelector('g.barLine');
-                                let _barlinePoint = _measure.ownerSVGElement.createSVGPoint();
+                                let _barlinePoint = note.ownerSVGElement.createSVGPoint();
                                 let _barlineBBox = _barline.getBBox();
                                 _barlinePoint.x = _barlineBBox.x
                                 _barlinePoint.y = _barlineBBox.y
@@ -770,7 +855,7 @@ export class ResponsiveView extends VerovioView {
                                         for (let j = 0; j < singleStaffNotes.length; j++) {
                                             let singleStaffNoteId = singleStaffNotes[j].id
                                             let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                            let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                            let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
                                             let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
                                             _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
                                             _singleStaffNotePoint.y = singleStaffNoteBBox.y;
@@ -790,6 +875,7 @@ export class ResponsiveView extends VerovioView {
                                     
                                     let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
                                     let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
+                                    
                                     let singleStaffRests = []
                                     if (singleStaffRests1) {
                                         singleStaffRests.push(...singleStaffRests1)
@@ -797,11 +883,11 @@ export class ResponsiveView extends VerovioView {
                                     if (singleStaffRests2) {
                                         singleStaffRests.push(...singleStaffRests2)
                                     }
-        
+                                    
                                     for (let j = 0; j < singleStaffRests.length; j++) {
                                         let singleStaffNoteId = singleStaffRests[j].id
                                         let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                        let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                        let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
                                         let singleStaffNoteBBox = singleStaffRests[j].getBBox()
                                         _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
                                         _singleStaffNotePoint.y = singleStaffNoteBBox.y;
@@ -820,33 +906,33 @@ export class ResponsiveView extends VerovioView {
                                 
                                 }
         
-                                
                                 measureTsNotes = measureTsNotes.sort((a, b) => a.time < b.time)
 
                                 let firstNoteIndex = -1;
+                                let firstNoteTime = -1;
                                 for (let i = 0; i < measureTsNotes.length; i++) {
                                     if (measureTsNotes[i].type == 'note') {
                                         firstNoteIndex = i;
+                                        firstNoteTime = measureTsNotes[firstNoteIndex].time
                                         break;
                                     }
                                 }
+                                
         
                                 for (let i = 0; i < measureTsNotes.length; i++) {
                                     if (measureTsNotes[i].time > time) {
-                                        if (!this.score_note_begin) {
-                                            if (firstNoteIndex > -1) {
-                                                if (measureTsNotes[i].type == 'note') {
+                                        if (firstNoteIndex > -1) {
+                                            if (measureTsNotes[i].type == 'note') {
+                                                if (measureTsNotes[i].x > cursorPoint.x) {
                                                     nextNoteIndex = i;
-                                                    this.score_note_begin = true;
                                                     break;
                                                 }
-                                            } else {
+                                            }
+                                        } else {
+                                            if (measureTsNotes[i].x > cursorPoint.x) {
                                                 nextNoteIndex = i;
                                                 break; 
                                             }
-                                        } else {
-                                            nextNoteIndex = i;
-                                            break;
                                         }
                                     }
                                 }
@@ -901,7 +987,7 @@ export class ResponsiveView extends VerovioView {
                                             let delgatenote1 = delgatemeasure1.querySelector('g.note')
                                             
                                             // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
-                                            let _delgatenotePoint1 = _measure.ownerSVGElement.createSVGPoint();
+                                            let _delgatenotePoint1 = note.ownerSVGElement.createSVGPoint();
                                             let delgatenotePointBBox1 = delgatenote1.getBBox()
                                             _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
                                             _delgatenotePoint1.y = delgatenotePointBBox1.y;
@@ -964,7 +1050,7 @@ export class ResponsiveView extends VerovioView {
                                                             let delgatenote1 = delgatemeasure1.querySelector('g.note')
                                                             
                                                             // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
-                                                            let _delgatenotePoint1 = _measure.ownerSVGElement.createSVGPoint();
+                                                            let _delgatenotePoint1 = note.ownerSVGElement.createSVGPoint();
                                                             let delgatenotePointBBox1 = delgatenote1.getBBox()
                                                             _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
                                                             _delgatenotePoint1.y = delgatenotePointBBox1.y;
@@ -993,7 +1079,7 @@ export class ResponsiveView extends VerovioView {
                                                                     for (let j = 0; j < singleStaffNotes.length; j++) {
                                                                         let singleStaffNoteId = singleStaffNotes[j].id
                                                                         let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                        let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                                                        let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
                                                                         let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
                                                                         _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
                                                                         _singleStaffNotePoint.y = singleStaffNoteBBox.y;
@@ -1024,7 +1110,7 @@ export class ResponsiveView extends VerovioView {
                                                                 for (let j = 0; j < singleStaffRests.length; j++) {
                                                                     let singleStaffNoteId = singleStaffRests[j].id
                                                                     let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                    let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
+                                                                    let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
                                                                     let singleStaffNoteBBox = singleStaffRests[j].getBBox()
                                                                     _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
                                                                     _singleStaffNotePoint.y = singleStaffNoteBBox.y;
