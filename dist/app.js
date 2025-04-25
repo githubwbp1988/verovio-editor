@@ -403,6 +403,13 @@ export class App {
             this.view.customEventManager.dispatch(event);
 
             this.midiPlayer.initCursor();
+            this.appToolbar.updateMenuStat({
+                detail: {
+                    name: 'cursor',
+                    stat: 1
+                }
+            });
+            
             this.midiPlayer.initTempo();
             this.appToolbar.updateMenuStat({
                 detail: {

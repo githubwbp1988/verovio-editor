@@ -196,7 +196,7 @@ export class ResponsiveView extends VerovioView {
         if (window.AudioContext) {
             if (!this.audioContext) {
                 this.audioContext = new AudioContext();    
-            }
+            } 
             if (!this.firstTempoSoundBuffer) {
                 this.loadTempoSound('/music/sounds/audio_tempo_up.mp3', (buffer) => { 
                     self.firstTempoSoundBuffer = buffer; 
@@ -549,11 +549,13 @@ export class ResponsiveView extends VerovioView {
                                                 })
                                             }
                                             _systemMeasures = _systemMeasures.filter(item => item.x > barlinePoint.x).sort((a, b) => a.x < b.x)
-            
+                                            
+                                            let ___system = null;
                                             if (_systemMeasures.length > 0) {
                                                 nextMeasure = _systemMeasures[0].measure
             
                                                 nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
+                                                ___system = _system;
                                             } else {
                                                 let page = _system.closest('g.page-margin');
                                                 if (page) {
@@ -586,19 +588,14 @@ export class ResponsiveView extends VerovioView {
                                                     }
                                                     _delgateSystemNotes = _delgateSystemNotes.sort((a, b) => a.time < b.time)
                                                     if (_delgateSystemNotes.length > 0) {
-                                                        let __measureGroups1 = _delgateSystemNotes[0].system.querySelectorAll('g.measure');
-                                                        measureGroups1 = [];
-                                                        for (let i = 0; i < __measureGroups1.length; i++) {
-                                                            if (__measureGroups1[i].id != _measure.id) {
-                                                                measureGroups1.push(__measureGroups1[i]);
-                                                            }
-                                                        }
+                                                        let measureGroups1 = _delgateSystemNotes[0].system.querySelectorAll('g.measure');
+                                                        
                                                         if (measureGroups1) {
                                                             for (let i = 0; i < measureGroups1.length; i++) {
                                                                 let delgatemeasure1 = measureGroups1[i]
                                                                 let delgatenote1 = delgatemeasure1.querySelector('g.note')
                                                                 
-                                                                // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
+                                                                let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
                                                                 let _delgatenotePoint1 = _measure.ownerSVGElement.createSVGPoint();
                                                                 let delgatenotePointBBox1 = delgatenote1.getBBox()
                                                                 _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
@@ -607,76 +604,18 @@ export class ResponsiveView extends VerovioView {
                                                                 const delgatenotePoint1 = _delgatenotePoint1.matrixTransform(ctm);
                                                                 _systemMeasures.push({
                                                                     measure: delgatemeasure1,
-                                                                    // time: delgatenoteTime1,
+                                                                    time: delgatenoteTime1,
                                                                     x: delgatenotePoint1.x
                                                                 })
                                                             }
+                                                            _systemMeasures = _systemMeasures.sort((a, b) => a.time < b.time)
                             
                                                             if (_systemMeasures.length > 0) {
                                                                 nextMeasure = _systemMeasures[0].measure
                             
                                                                 nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
+                                                                ___system = _delgateSystemNotes[0].system;
                                                             } 
-                            
-                                                            if (nextstaffGroups) {
-                                                                for (let k = 0; k < nextstaffGroups.length; k++) {
-                                                                
-                                                                    let singleStaffGroup = nextstaffGroups[k];
-                                                                    let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
-                                                                    
-                                                                    if (singleStaffNotes) {
-                                                                        for (let j = 0; j < singleStaffNotes.length; j++) {
-                                                                            let singleStaffNoteId = singleStaffNotes[j].id
-                                                                            let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                            let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
-                                                                            let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
-                                                                            _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                                                            _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-                            
-                                                                            const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                                            
-                                                                            nextmeasureTsNotes.push({
-                                                                                id: singleStaffNoteId,
-                                                                                time: singleStaffNoteTime,
-                                                                                x: singleStaffNotePoint.x,
-                                                                                y1: systemLtPoint.y - toolbarHeight,
-                                                                                y2: systemRbPoint.y - toolbarHeight
-                                                                            })
-                                                                        }
-                                                                    }
-                            
-                            
-                                                                    let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
-                                                                    let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
-                                                                    let singleStaffRests = []
-                                                                    if (singleStaffRests1) {
-                                                                        singleStaffRests.push(...singleStaffRests1)
-                                                                    }
-                                                                    if (singleStaffRests2) {
-                                                                        singleStaffRests.push(...singleStaffRests2)
-                                                                    }
-                            
-                                                                    for (let j = 0; j < singleStaffRests.length; j++) {
-                                                                        let singleStaffNoteId = singleStaffRests[j].id
-                                                                        let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                        let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
-                                                                        let singleStaffNoteBBox = singleStaffRests[j].getBBox()
-                                                                        _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                                                        _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-                            
-                                                                        const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                                        
-                                                                        nextmeasureTsNotes.push({
-                                                                            id: singleStaffNoteId,
-                                                                            time: singleStaffNoteTime,
-                                                                            x: singleStaffNotePoint.x,
-                                                                            y1: systemLtPoint.y - toolbarHeight,
-                                                                            y2: systemRbPoint.y - toolbarHeight
-                                                                        })
-                                                                    }
-                                                                    
-                                                                }
-                                                            }
                                                         }
                                                     }
                                                 }
@@ -700,6 +639,8 @@ export class ResponsiveView extends VerovioView {
                                                             const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
                                                             
                                                             nextmeasureTsNotes.push({
+                                                                note: singleStaffNotes[j],
+                                                                system: ___system,
                                                                 id: singleStaffNoteId,
                                                                 time: singleStaffNoteTime,
                                                                 x: singleStaffNotePoint.x,
@@ -731,6 +672,8 @@ export class ResponsiveView extends VerovioView {
                                                         const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
                                                         
                                                         nextmeasureTsNotes.push({
+                                                            note: singleStaffRests[j],
+                                                            system: ___system,
                                                             id: singleStaffNoteId,
                                                             time: singleStaffNoteTime,
                                                             x: singleStaffNotePoint.x,
@@ -747,11 +690,10 @@ export class ResponsiveView extends VerovioView {
             
                                         if (nextmeasureTsNotes.length > 0) {
                                             if (nextmeasureTsNotes[0].x > cursorPoint.x) {
-                                                for (let i = 0; i < ___count / 2; i++) {
-                                                    let disx = (barlinePoint.x - cursorPoint.x) / (___count / 2) * (i + 1);
+                                                for (let i = 0; i < ___count; i++) {
+                                                    let disx = (nextmeasureTsNotes[0].x - cursorPoint.x) / ___count * (i + 1);
                                                     let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
                                                     let destx = cursorPoint.x + disx
-                                                    
                                                     setTimeout(() => {
                                                         let sq_cursor_rawX = 0;
                                                         if (sq_cursor.getAttribute('x1')) {
@@ -772,30 +714,66 @@ export class ResponsiveView extends VerovioView {
                                                         }
                                                     }, distime)
                                                 }
-            
-                                                for (let i = ___count / 2; i < ___count; i++) {
-                                                    let disx = (nextmeasureTsNotes[0].x - barlinePoint.x) / (___count / 2) * (i - ___count / 2 + 1);
-                                                    let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
-                                                    let destx = barlinePoint.x + disx
-                                                    
-                                                    setTimeout(() => {
-                                                        let sq_cursor_rawX = 0;
-                                                        if (sq_cursor.getAttribute('x1')) {
-                                                            sq_cursor_rawX = parseFloat(sq_cursor.getAttribute('x1'))
-                                                        }
-                                                        let sq_cursor_rawY = 0;
-                                                        if (sq_cursor.getAttribute('y1')) {
-                                                            sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
-                                                        }
-
-                                                        if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || measureTsNotes[0].y1 != sq_cursor_rawY) {
+                                            } else {
+                                                for (let i = 0; i < ___count / 2; i++) {
+                                                    let disx = (barlinePoint.x - cursorPoint.x) / (___count / 2) * (i + 1);
+                                                    if (disx > 0) {
+                                                        let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
+                                                        let destx = cursorPoint.x + disx
                                                         
-                                                            sq_cursor.setAttribute('x1', destx);
-                                                            sq_cursor.setAttribute('x2', destx);
-                                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
-                                                        }
-                                                    }, distime)
+                                                        setTimeout(() => {
+                                                            let sq_cursor_rawX = 0;
+                                                            if (sq_cursor.getAttribute('x1')) {
+                                                                sq_cursor_rawX = parseFloat(sq_cursor.getAttribute('x1'))
+                                                            }
+
+                                                            let sq_cursor_rawY = 0;
+                                                            if (sq_cursor.getAttribute('y1')) {
+                                                                sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
+                                                            }
+
+                                                            if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || measureTsNotes[0].y1 != sq_cursor_rawY) {
+                                                            
+                                                                sq_cursor.setAttribute('x1', destx);
+                                                                sq_cursor.setAttribute('x2', destx);
+                                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                            }
+                                                        }, distime)
+                                                    }
+                                                }
+                                                let _grpSym = nextmeasureTsNotes[0].system.querySelector('g.grpSym');
+                                                if (_grpSym) {
+                                                    let _startBracePoint = nextmeasureTsNotes[0].note.ownerSVGElement.createSVGPoint();
+                                                    let _startBracePointBBox = _grpSym.getBBox()
+                                                    _startBracePoint.x = _startBracePointBBox.x;
+                                                    _startBracePoint.y = _startBracePointBBox.y;
+
+                                                    const startBracePoint = _startBracePoint.matrixTransform(ctm);
+                                                    for (let i = ___count / 2; i < ___count; i++) {
+                                                        let disx = (nextmeasureTsNotes[0].x - startBracePoint.x) / (___count / 2) * (i - ___count / 2 + 1);
+                                                        let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
+                                                        let destx = startBracePoint.x + disx
+                                                        
+                                                        setTimeout(() => {
+                                                            let sq_cursor_rawX = 0;
+                                                            if (sq_cursor.getAttribute('x1')) {
+                                                                sq_cursor_rawX = parseFloat(sq_cursor.getAttribute('x1'))
+                                                            }
+                                                            let sq_cursor_rawY = 0;
+                                                            if (sq_cursor.getAttribute('y1')) {
+                                                                sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
+                                                            }
+    
+                                                            if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || measureTsNotes[0].y1 != sq_cursor_rawY) {
+                                                            
+                                                                sq_cursor.setAttribute('x1', destx);
+                                                                sq_cursor.setAttribute('x2', destx);
+                                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                            }
+                                                        }, distime)
+                                                    }
                                                 }
                                             }
                                         } 
@@ -1098,10 +1076,12 @@ export class ResponsiveView extends VerovioView {
                                             }
                                             _systemMeasures = _systemMeasures.filter(item => item.x > barlinePoint.x).sort((a, b) => a.x < b.x)
             
+                                            let ___system = null;
                                             if (_systemMeasures.length > 0) {
                                                 nextMeasure = _systemMeasures[0].measure
             
                                                 nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
+                                                ___system = _system;
                                             } else {
                                                 let page = _system.closest('g.page-margin');
                                                 if (page) {
@@ -1134,19 +1114,14 @@ export class ResponsiveView extends VerovioView {
                                                     }
                                                     _delgateSystemNotes = _delgateSystemNotes.sort((a, b) => a.time < b.time)
                                                     if (_delgateSystemNotes.length > 0) {
-                                                        let __measureGroups1 = _delgateSystemNotes[0].system.querySelectorAll('g.measure');
-                                                        measureGroups1 = [];
-                                                        for (let i = 0; i < __measureGroups1.length; i++) {
-                                                            if (__measureGroups1[i].id != _measure.id) {
-                                                                measureGroups1.push(__measureGroups1[i]);
-                                                            }
-                                                        }
+                                                        let measureGroups1 = _delgateSystemNotes[0].system.querySelectorAll('g.measure');
+                                                        
                                                         if (measureGroups1) {
                                                             for (let i = 0; i < measureGroups1.length; i++) {
                                                                 let delgatemeasure1 = measureGroups1[i]
                                                                 let delgatenote1 = delgatemeasure1.querySelector('g.note')
                                                                 
-                                                                // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
+                                                                let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
                                                                 let _delgatenotePoint1 = note.ownerSVGElement.createSVGPoint();
                                                                 let delgatenotePointBBox1 = delgatenote1.getBBox()
                                                                 _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
@@ -1155,76 +1130,19 @@ export class ResponsiveView extends VerovioView {
                                                                 const delgatenotePoint1 = _delgatenotePoint1.matrixTransform(ctm);
                                                                 _systemMeasures.push({
                                                                     measure: delgatemeasure1,
-                                                                    // time: delgatenoteTime1,
+                                                                    time: delgatenoteTime1,
                                                                     x: delgatenotePoint1.x
                                                                 })
                                                             }
+                                                            _systemMeasures = _systemMeasures.sort((a, b) => a.time < b.time)
                             
                                                             if (_systemMeasures.length > 0) {
                                                                 nextMeasure = _systemMeasures[0].measure
                             
                                                                 nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
+                                                                ___system = _delgateSystemNotes[0].system;
                                                             } 
-                            
-                                                            if (nextstaffGroups) {
-                                                                for (let k = 0; k < nextstaffGroups.length; k++) {
-                                                                
-                                                                    let singleStaffGroup = nextstaffGroups[k];
-                                                                    let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
-                                                                    
-                                                                    if (singleStaffNotes) {
-                                                                        for (let j = 0; j < singleStaffNotes.length; j++) {
-                                                                            let singleStaffNoteId = singleStaffNotes[j].id
-                                                                            let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                            let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
-                                                                            let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
-                                                                            _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                                                            _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-                            
-                                                                            const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                                            
-                                                                            nextmeasureTsNotes.push({
-                                                                                id: singleStaffNoteId,
-                                                                                time: singleStaffNoteTime,
-                                                                                x: singleStaffNotePoint.x,
-                                                                                y1: systemLtPoint.y - toolbarHeight,
-                                                                                y2: systemRbPoint.y - toolbarHeight
-                                                                            })
-                                                                        }
-                                                                    }
-                            
-                            
-                                                                    let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
-                                                                    let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
-                                                                    let singleStaffRests = []
-                                                                    if (singleStaffRests1) {
-                                                                        singleStaffRests.push(...singleStaffRests1)
-                                                                    }
-                                                                    if (singleStaffRests2) {
-                                                                        singleStaffRests.push(...singleStaffRests2)
-                                                                    }
-                            
-                                                                    for (let j = 0; j < singleStaffRests.length; j++) {
-                                                                        let singleStaffNoteId = singleStaffRests[j].id
-                                                                        let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                        let _singleStaffNotePoint = note.ownerSVGElement.createSVGPoint();
-                                                                        let singleStaffNoteBBox = singleStaffRests[j].getBBox()
-                                                                        _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                                                        _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-                            
-                                                                        const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                                        
-                                                                        nextmeasureTsNotes.push({
-                                                                            id: singleStaffNoteId,
-                                                                            time: singleStaffNoteTime,
-                                                                            x: singleStaffNotePoint.x,
-                                                                            y1: systemLtPoint.y - toolbarHeight,
-                                                                            y2: systemRbPoint.y - toolbarHeight
-                                                                        })
-                                                                    }
-                                                                    
-                                                                }
-                                                            }
+                                                            
                                                         }
                                                     }
                                                 }
@@ -1248,6 +1166,8 @@ export class ResponsiveView extends VerovioView {
                                                             const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
                                                             
                                                             nextmeasureTsNotes.push({
+                                                                note: singleStaffNotes[j],
+                                                                system: ___system,
                                                                 id: singleStaffNoteId,
                                                                 time: singleStaffNoteTime,
                                                                 x: singleStaffNotePoint.x,
@@ -1279,6 +1199,8 @@ export class ResponsiveView extends VerovioView {
                                                         const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
                                                         
                                                         nextmeasureTsNotes.push({
+                                                            note: singleStaffRests[j],
+                                                            system: ___system,
                                                             id: singleStaffNoteId,
                                                             time: singleStaffNoteTime,
                                                             x: singleStaffNotePoint.x,
@@ -1295,6 +1217,33 @@ export class ResponsiveView extends VerovioView {
             
                                         if (nextmeasureTsNotes.length > 0) {
                                             if (nextmeasureTsNotes[0].x > cursorPoint.x) {
+                                                for (let i = 0; i < ___count; i++) {
+                                                    let disx = (nextmeasureTsNotes[0].x - cursorPoint.x) / ___count * (i + 1);
+                                                    if (disx > 0) {
+                                                        let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
+                                                        let destx = cursorPoint.x + disx
+                                                        setTimeout(() => {
+                                                            let sq_cursor_rawX = 0;
+                                                            if (sq_cursor.getAttribute('x1')) {
+                                                                sq_cursor_rawX = parseFloat(sq_cursor.getAttribute('x1'))
+                                                            }
+
+                                                            let sq_cursor_rawY = 0;
+                                                            if (sq_cursor.getAttribute('y1')) {
+                                                                sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
+                                                            }
+
+                                                            if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || measureTsNotes[0].y1 != sq_cursor_rawY) {
+                                                            
+                                                                sq_cursor.setAttribute('x1', destx);
+                                                                sq_cursor.setAttribute('x2', destx);
+                                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                            }
+                                                        }, distime)
+                                                    }
+                                                }
+                                            } else {
                                                 for (let i = 0; i < ___count / 2; i++) {
                                                     let disx = (barlinePoint.x - cursorPoint.x) / (___count / 2) * (i + 1);
                                                     let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
@@ -1305,44 +1254,53 @@ export class ResponsiveView extends VerovioView {
                                                         if (sq_cursor.getAttribute('x1')) {
                                                             sq_cursor_rawX = parseFloat(sq_cursor.getAttribute('x1'))
                                                         }
+
                                                         let sq_cursor_rawY = 0;
                                                         if (sq_cursor.getAttribute('y1')) {
                                                             sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
                                                         }
 
-                                                        if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || measureTsNotes[0].y1 != sq_cursor_rawY) {
+                                                        if (nextmeasureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || nextmeasureTsNotes[0].y1 != sq_cursor_rawY) {
                                                         
                                                             sq_cursor.setAttribute('x1', destx);
                                                             sq_cursor.setAttribute('x2', destx);
-                                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                            sq_cursor.setAttribute('y1', nextmeasureTsNotes[0].y1);
+                                                            sq_cursor.setAttribute('y2', nextmeasureTsNotes[0].y2);
                                                         }
                                                     }, distime)
                                                 }
-            
-                                                for (let i = ___count / 2; i < ___count; i++) {
-                                                    let disx = (nextmeasureTsNotes[0].x - barlinePoint.x) / (___count / 2) * (i - (___count / 2) + 1);
-                                                    let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
-                                                    let destx = barlinePoint.x + disx
-                                                    
-                                                    setTimeout(() => {
-                                                        let sq_cursor_rawX = 0;
-                                                        if (sq_cursor.getAttribute('x1')) {
-                                                            sq_cursor_rawX = parseFloat(sq_cursor.getAttribute('x1'))
-                                                        }
-                                                        let sq_cursor_rawY = 0;
-                                                        if (sq_cursor.getAttribute('y1')) {
-                                                            sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
-                                                        }
+                                                let _grpSym = nextmeasureTsNotes[0].system.querySelector('g.grpSym');
+                                                if (_grpSym) {
+                                                    let _startBracePoint = nextmeasureTsNotes[0].note.ownerSVGElement.createSVGPoint();
+                                                    let _startBracePointBBox = _grpSym.getBBox()
+                                                    _startBracePoint.x = _startBracePointBBox.x;
+                                                    _startBracePoint.y = _startBracePointBBox.y;
 
-                                                        if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || measureTsNotes[0].y1 != sq_cursor_rawY) {
+                                                    const startBracePoint = _startBracePoint.matrixTransform(ctm);
+                                                    for (let i = ___count / 2; i < ___count; i++) {
+                                                        let disx = (nextmeasureTsNotes[0].x - startBracePoint.x) / (___count / 2) * (i - ___count / 2 + 1);
+                                                        let distime = (nextmeasureTsNotes[0].time - time) / ___count * (i + 1);
+                                                        let destx = startBracePoint.x + disx
                                                         
-                                                            sq_cursor.setAttribute('x1', destx);
-                                                            sq_cursor.setAttribute('x2', destx);
-                                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
-                                                        }
-                                                    }, distime)
+                                                        setTimeout(() => {
+                                                            let sq_cursor_rawX = 0;
+                                                            if (sq_cursor.getAttribute('x1')) {
+                                                                sq_cursor_rawX = parseFloat(sq_cursor.getAttribute('x1'))
+                                                            }
+                                                            let sq_cursor_rawY = 0;
+                                                            if (sq_cursor.getAttribute('y1')) {
+                                                                sq_cursor_rawY = parseFloat(sq_cursor.getAttribute('y1'))
+                                                            }
+    
+                                                            if (nextmeasureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX || nextmeasureTsNotes[0].y1 != sq_cursor_rawY) {
+                                                            
+                                                                sq_cursor.setAttribute('x1', destx);
+                                                                sq_cursor.setAttribute('x2', destx);
+                                                                sq_cursor.setAttribute('y1', nextmeasureTsNotes[0].y1);
+                                                                sq_cursor.setAttribute('y2', nextmeasureTsNotes[0].y2);
+                                                            }
+                                                        }, distime)
+                                                    }
                                                 }
                                             }
                                         } 
@@ -1571,20 +1529,14 @@ export class ResponsiveView extends VerovioView {
                                                 }
                                                 _delgateSystemNotes = _delgateSystemNotes.sort((a, b) => a.time < b.time)
                                                 if (_delgateSystemNotes.length > 0) {
-                                                    let __measureGroups1 = _delgateSystemNotes[0].system.querySelectorAll('g.measure');
-                                                    measureGroups1 = [];
-                                                    for (let i = 0; i < __measureGroups1.length; i++) {
-                                                        if (__measureGroups1[i].id != _measure.id) {
-                                                            measureGroups1.push(__measureGroups1[i]);
-                                                        }
-                                                    }
+                                                    let measureGroups1 = _delgateSystemNotes[0].system.querySelectorAll('g.measure');
                                                     
                                                     if (measureGroups1) {
                                                         for (let i = 0; i < measureGroups1.length; i++) {
                                                             let delgatemeasure1 = measureGroups1[i]
                                                             let delgatenote1 = delgatemeasure1.querySelector('g.note')
                                                             
-                                                            // let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
+                                                            let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id)
                                                             let _delgatenotePoint1 = _measure.ownerSVGElement.createSVGPoint();
                                                             let delgatenotePointBBox1 = delgatenote1.getBBox()
                                                             _delgatenotePoint1.x = delgatenotePointBBox1.x + delgatenotePointBBox1.width / 2;
@@ -1593,76 +1545,18 @@ export class ResponsiveView extends VerovioView {
                                                             const delgatenotePoint1 = _delgatenotePoint1.matrixTransform(ctm);
                                                             _systemMeasures.push({
                                                                 measure: delgatemeasure1,
-                                                                // time: delgatenoteTime1,
+                                                                time: delgatenoteTime1,
                                                                 x: delgatenotePoint1.x
                                                             })
                                                         }
+                                                        _systemMeasures = _systemMeasures.sort((a, b) => a.time < b.time)
                         
                                                         if (_systemMeasures.length > 0) {
                                                             nextMeasure = _systemMeasures[0].measure
                         
                                                             nextstaffGroups = nextMeasure.querySelectorAll('g.staff')
                                                         } 
-                        
-                                                        if (nextstaffGroups) {
-                                                            for (let k = 0; k < nextstaffGroups.length; k++) {
-                                                            
-                                                                let singleStaffGroup = nextstaffGroups[k];
-                                                                let singleStaffNotes = singleStaffGroup.querySelectorAll('g.note');
-                                                                
-                                                                if (singleStaffNotes) {
-                                                                    for (let j = 0; j < singleStaffNotes.length; j++) {
-                                                                        let singleStaffNoteId = singleStaffNotes[j].id
-                                                                        let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                        let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
-                                                                        let singleStaffNoteBBox = singleStaffNotes[j].getBBox()
-                                                                        _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                                                        _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-                        
-                                                                        const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                                        
-                                                                        nextmeasureTsNotes.push({
-                                                                            id: singleStaffNoteId,
-                                                                            time: singleStaffNoteTime,
-                                                                            x: singleStaffNotePoint.x,
-                                                                            y1: systemLtPoint.y - toolbarHeight,
-                                                                            y2: systemRbPoint.y - toolbarHeight
-                                                                        })
-                                                                    }
-                                                                }
-                        
-                        
-                                                                let singleStaffRests1 = singleStaffGroup.querySelectorAll('g.mRest');
-                                                                let singleStaffRests2 = singleStaffGroup.querySelectorAll('g.rest');
-                                                                let singleStaffRests = []
-                                                                if (singleStaffRests1) {
-                                                                    singleStaffRests.push(...singleStaffRests1)
-                                                                }
-                                                                if (singleStaffRests2) {
-                                                                    singleStaffRests.push(...singleStaffRests2)
-                                                                }
-                        
-                                                                for (let j = 0; j < singleStaffRests.length; j++) {
-                                                                    let singleStaffNoteId = singleStaffRests[j].id
-                                                                    let singleStaffNoteTime = yield this.app.verovio.getTimeForElement(singleStaffNoteId)
-                                                                    let _singleStaffNotePoint = _measure.ownerSVGElement.createSVGPoint();
-                                                                    let singleStaffNoteBBox = singleStaffRests[j].getBBox()
-                                                                    _singleStaffNotePoint.x = singleStaffNoteBBox.x + singleStaffNoteBBox.width / 2;
-                                                                    _singleStaffNotePoint.y = singleStaffNoteBBox.y;
-                        
-                                                                    const singleStaffNotePoint = _singleStaffNotePoint.matrixTransform(ctm);
-                                                                    
-                                                                    nextmeasureTsNotes.push({
-                                                                        id: singleStaffNoteId,
-                                                                        time: singleStaffNoteTime,
-                                                                        x: singleStaffNotePoint.x,
-                                                                        y1: systemLtPoint.y - toolbarHeight,
-                                                                        y2: systemRbPoint.y - toolbarHeight
-                                                                    })
-                                                                }
-                                                                
-                                                            }
-                                                        }
+                                                        
                                                     }
                                                 }
                                             }
