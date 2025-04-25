@@ -23,6 +23,12 @@ export class MidiPlayer {
     // Public method to be called by the user
     ////////////////////////////////////////////////////////////////////////
 
+    initCursor() {
+        if (this.view) {
+            this.view.cursorValid(true);
+            this.view.sqCursorValid(false);
+        }
+    }
     initTempo() {
         if (this.view) {
             this.view.initMetronomeAudio();
@@ -87,6 +93,33 @@ export class MidiPlayer {
             this.view.seekTempoProcess();
         }
     }
+
+    openOrCloseTempo() {
+        if (this.view) {
+            this.view.tempoValid(!this.view.getTempoValid());
+        }
+    }
+    openOrCloseCursor() {
+        if (this.view) {
+            this.view.cursorValid(!this.view.getCursorValid());
+        }
+        this.view.sqCursorValid(false);
+    }
+    openOrCloseSqCursor() {
+        if (this.view) {
+            this.view.sqCursorValid(!this.view.getSqCursorValid());
+        }
+    }
+    getTempoStat() {
+        return this.view.getTempoValid()
+    }
+    getStandCursorStat() {
+        return this.view.getCursorValid()
+    }
+    getSqCursorStat() {
+        return this.view.getSqCursorValid()
+    }
+    
     ////////////////////////////////////////////////////////////////////////
     // Internal methods for updating the UI
     ////////////////////////////////////////////////////////////////////////

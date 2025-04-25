@@ -124,6 +124,23 @@ export class AppToolbar extends Toolbar {
         // 选择曲谱
         const scoreMenu = appendDivTo(this.element, { class: `vrv-menu` });
         this.scoreMenuBtn = appendDivTo(scoreMenu, { class: `vrv-btn-text`, 'data-before': `选择曲谱播放` });
+
+
+        this.scorePlayControl = appendDivTo(this.element, { class: `vrv-btn-group` });
+        appendDivTo(this.scorePlayControl, { class: `vrv-h-separator` });
+        this.openOrCloseTempo = appendDivTo(this.scorePlayControl, { class: `vrv-btn-text`, 'data-before': `打开节奏` });
+        this.app.eventManager.bind(this.openOrCloseTempo, 'click', this.app.openOrCloseTempo);
+
+        this.scoreCursorControl = appendDivTo(this.element, { class: `vrv-btn-group` });
+        appendDivTo(this.scoreCursorControl, { class: `vrv-h-separator` });
+        this.openOrCloseCursor = appendDivTo(this.scoreCursorControl, { class: `vrv-btn-text`, 'data-before': `关闭音符标` });
+        this.app.eventManager.bind(this.openOrCloseCursor, 'click', this.app.openOrCloseCursor);
+
+        this.scoreSqCursorControl = appendDivTo(this.element, { class: `vrv-btn-group` });
+        appendDivTo(this.scoreSqCursorControl, { class: `vrv-h-separator` });
+        this.openOrCloseSqCursor = appendDivTo(this.scoreSqCursorControl, { class: `vrv-btn-text`, 'data-before': `打开速度标` });
+        this.app.eventManager.bind(this.openOrCloseSqCursor, 'click', this.app.openOrCloseSqCursor);
+
         const scoreMenuContent = appendDivTo(scoreMenu, { class: `vrv-menu-content` });
         appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score1 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千本櫻` });
@@ -131,49 +148,49 @@ export class AppToolbar extends Toolbar {
         this.score1.dataset.filename = '千本櫻';
         this.app.eventManager.bind(this.score1, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score2 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `夜樱与幽世之蝶` });
         this.score2.dataset.filepath = '/music/mei/夜樱与幽世之蝶.mei'
         this.score2.dataset.filename = '夜樱与幽世之蝶';
         this.app.eventManager.bind(this.score2, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score3 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千夜一夜物語` });
         this.score3.dataset.filepath = '/music/mei/千夜一夜物語.mei'
         this.score3.dataset.filename = '千夜一夜物語';
         this.app.eventManager.bind(this.score3, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score4 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `Game of Thrones_simple` });
         this.score4.dataset.filepath = '/music/mei/Game of Thrones_simple.mei'
         this.score4.dataset.filename = 'Game of Thrones_simple';
         this.app.eventManager.bind(this.score4, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score5 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千夜一夜` });
         this.score5.dataset.filepath = '/music/mei/千夜一夜.mei'
         this.score5.dataset.filename = '千夜一夜';
         this.app.eventManager.bind(this.score5, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score6 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `千夜_火影` });
         this.score6.dataset.filepath = '/music/mei/千夜_火影.mei'
         this.score6.dataset.filename = '千夜_火影';
         this.app.eventManager.bind(this.score6, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score7 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `亡灵序曲` });
         this.score7.dataset.filepath = '/music/mei/亡灵序曲.mei'
         this.score7.dataset.filename = '亡灵序曲';
         this.app.eventManager.bind(this.score7, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score8 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `Whiplash` });
         this.score8.dataset.filepath = '/music/mei/Whiplash.mei'
         this.score8.dataset.filename = 'Whiplash';
         this.app.eventManager.bind(this.score8, 'click', this.app.fileLoadMei);
 
-        appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
+        // appendDivTo(scoreMenuContent, { class: `vrv-v-separator` });
         this.score9 = appendDivTo(scoreMenuContent, { class: `vrv-menu-text`, 'data-before': `Sadness and Snrrow` });
         this.score9.dataset.filepath = '/music/mei/Sadness and Snrrow.mei'
         this.score9.dataset.filename = 'Sadness and Snrrow';
@@ -271,6 +288,29 @@ export class AppToolbar extends Toolbar {
     ////////////////////////////////////////////////////////////////////////
     // Mouse methods
     ////////////////////////////////////////////////////////////////////////
+    updateMenuStat(e) {
+        if (e.detail.name == 'tempo') {
+            if (e.detail.stat) {
+                this.openOrCloseTempo.setAttribute('data-before', '关闭节奏');
+            } else {
+                this.openOrCloseTempo.setAttribute('data-before', '打开节奏');
+            }
+        } else if (e.detail.name == 'cursor') {
+            if (e.detail.stat == 0) {
+                this.openOrCloseCursor.setAttribute('data-before', '打开音符标');
+                this.openOrCloseSqCursor.setAttribute('data-before', '打开速度标');
+                this.openOrCloseSqCursor.style.display = 'none';
+            } else if (e.detail.stat == 1) {
+                this.openOrCloseCursor.setAttribute('data-before', '关闭音符标');
+                this.openOrCloseSqCursor.setAttribute('data-before', '打开速度标');
+                this.openOrCloseSqCursor.style.display = 'block';
+            } else if (e.detail.stat == 2) {
+                this.openOrCloseCursor.setAttribute('data-before', '关闭音符标');
+                this.openOrCloseSqCursor.setAttribute('data-before', '关闭速度标');
+                this.openOrCloseSqCursor.style.display = 'block';
+            }
+        }
+    }
     onMouseOver(e) {
         for (const node of this.element.querySelectorAll('div.vrv-menu-content')) {
             // Hide the menu content
@@ -281,6 +321,10 @@ export class AppToolbar extends Toolbar {
         for (const node of this.element.querySelectorAll('div.vrv-menu-content')) {
             // Remove the class so the menu content is shown again with a hover
             node.classList.add("clicked");
+
+            if (e.target.dataset.before && e.target.dataset.filepath && e.target.dataset.filename) {
+                this.scoreMenuBtn.setAttribute("data-before", e.target.dataset.filename);
+            }
         }
     }
     ////////////////////////////////////////////////////////////////////////

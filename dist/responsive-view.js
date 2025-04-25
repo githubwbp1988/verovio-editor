@@ -154,12 +154,27 @@ export class ResponsiveView extends VerovioView {
     }
     cursorValid(valid) {
         this.stand_cursor = valid;
+        if (!valid) {
+            if (this.cachedCursorArray) {
+                for (let l = 0; l < this.cachedCursorArray.length; l++) {
+                    this.cachedCursorArray[l].setAttribute('x1', -100);
+                    this.cachedCursorArray[l].setAttribute('x2', -100);
+                }
+            }
+        }
     }
     getCursorValid() {
         return this.stand_cursor;
     }
     sqCursorValid(valid) {
         this.sq_cursor_flash = valid;
+        if (!valid) {
+            let sq_cursor = document.querySelector('#playback-sq-cursor');
+            if (sq_cursor) {
+                sq_cursor.setAttribute('x1', -100);
+                sq_cursor.setAttribute('x2', -100);
+            }
+        }
     }
     getSqCursorValid() {
         return this.sq_cursor_flash;
@@ -174,10 +189,7 @@ export class ResponsiveView extends VerovioView {
         this.tempoPlayFlag = true;
     }
     initMetronomeAudio() {
-        this.cursorValid(true);
-        this.sqCursorValid(true);
-        this.tempoValid(true);
-
+        this.isTempoValid = false;
         this.tempoStart();
         /////// 
         let self = this
@@ -315,6 +327,9 @@ export class ResponsiveView extends VerovioView {
 
                 let _toolbar = document.querySelector('.vrv-toolbar');
                 let toolbarHeight = _toolbar.getBoundingClientRect().height;
+                let windowScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+                toolbarHeight = toolbarHeight - windowScrollTop;
 
                 let cursorPositioned = [];
                 let cursorArray = [];
@@ -786,6 +801,12 @@ export class ResponsiveView extends VerovioView {
                                         } 
                                     }
                                     /////////////////////////////////////////////////////////////////////
+                                } else {
+                                    sq_cursor = svg.querySelector('#playback-sq-cursor');
+                                    if (sq_cursor) {
+                                        sq_cursor.setAttribute('x1', -100);
+                                        sq_cursor.setAttribute('x2', -100);
+                                    }
                                 }
 
                                 for (let k = 0; k < staffGroups.length; k++) {
@@ -1328,6 +1349,12 @@ export class ResponsiveView extends VerovioView {
                                     }
             
                                 }
+                            } else {
+                                sq_cursor = svg.querySelector('#playback-sq-cursor');
+                                if (sq_cursor) {
+                                    sq_cursor.setAttribute('x1', -100);
+                                    sq_cursor.setAttribute('x2', -100);
+                                }
                             }
 
                             break;
@@ -1808,6 +1835,12 @@ export class ResponsiveView extends VerovioView {
                             }
                             
                         }
+                    } else {
+                        sq_cursor = svg.querySelector('#playback-sq-cursor');
+                        if (sq_cursor) {
+                            sq_cursor.setAttribute('x1', -100);
+                            sq_cursor.setAttribute('x2', -100);
+                        }
                     }
                 }
 
@@ -1853,18 +1886,21 @@ export class ResponsiveView extends VerovioView {
                         // scrollContainer.scrollTop = cursorYTopRelativeToContainerArray[0];
                         let progressY = cursorYTopRelativeToContainerArray[0] - scrollY - translateYOffset;
                         svg.style.transform = `translateY(-${progressY}px)`;
-                        for (let j = 0; j < cursorArray.length; j++) {
-                            let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
-                            let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
-                            cursorArray[j].setAttribute('y1', y1Val - progressY);
-                            cursorArray[j].setAttribute('y2', y2Val - progressY);
-                        }
 
-                        if (this.sq_cursor_flash && sq_cursor) {
-                            let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
-                            let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
-                            sq_cursor.setAttribute('y1', y1Val1 - progressY);
-                            sq_cursor.setAttribute('y2', y2Val1 - progressY);
+                        if (this.stand_cursor) {
+                            for (let j = 0; j < cursorArray.length; j++) {
+                                let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
+                                let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
+                                cursorArray[j].setAttribute('y1', y1Val - progressY);
+                                cursorArray[j].setAttribute('y2', y2Val - progressY);
+                            }
+    
+                            if (this.sq_cursor_flash && sq_cursor) {
+                                let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
+                                let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
+                                sq_cursor.setAttribute('y1', y1Val1 - progressY);
+                                sq_cursor.setAttribute('y2', y2Val1 - progressY);
+                            }
                         }
                     }
                     // 光标底部超出可视区域下方
@@ -1874,18 +1910,20 @@ export class ResponsiveView extends VerovioView {
                         
                         svg.style.transform = `translateY(-${progressY}px)`;
 
-                        for (let j = 0; j < cursorArray.length; j++) {
-                            let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
-                            let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
-                            cursorArray[j].setAttribute('y1', y1Val - progressY);
-                            cursorArray[j].setAttribute('y2', y2Val - progressY);
-                        }
-
-                        if (this.sq_cursor_flash && sq_cursor) {
-                            let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
-                            let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
-                            sq_cursor.setAttribute('y1', y1Val1 - progressY);
-                            sq_cursor.setAttribute('y2', y2Val2 - progressY);
+                        if (this.stand_cursor) {
+                            for (let j = 0; j < cursorArray.length; j++) {
+                                let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
+                                let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
+                                cursorArray[j].setAttribute('y1', y1Val - progressY);
+                                cursorArray[j].setAttribute('y2', y2Val - progressY);
+                            }
+    
+                            if (this.sq_cursor_flash && sq_cursor) {
+                                let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
+                                let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
+                                sq_cursor.setAttribute('y1', y1Val1 - progressY);
+                                sq_cursor.setAttribute('y2', y2Val2 - progressY);
+                            }
                         }
                     }
 
@@ -1897,6 +1935,12 @@ export class ResponsiveView extends VerovioView {
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////
 
+            } else {
+                let sq_cursor = svg.querySelector('#playback-sq-cursor');
+                if (sq_cursor) {
+                    sq_cursor.setAttribute('x1', -100);
+                    sq_cursor.setAttribute('x2', -100);
+                }
             }
 
             if ((elementsAtTime.notes.length > 0) && (this.midiIds != elementsAtTime.notes)) {

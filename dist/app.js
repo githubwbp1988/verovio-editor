@@ -402,7 +402,14 @@ export class App {
             });
             this.view.customEventManager.dispatch(event);
 
+            this.midiPlayer.initCursor();
             this.midiPlayer.initTempo();
+            this.appToolbar.updateMenuStat({
+                detail: {
+                    name: 'tempo',
+                    stat: this.midiPlayer.getTempoStat()
+                }
+            });
         });
     }
     applySelection() {
@@ -558,6 +565,46 @@ export class App {
             this.customEventManager.dispatch(event);
         }
     }
+
+    openOrCloseTempo(e) {
+        this.midiPlayer.openOrCloseTempo();
+        this.appToolbar.updateMenuStat({
+            detail: {
+                name: 'tempo',
+                stat: this.midiPlayer.getTempoStat()
+            }
+        });
+    }
+
+    openOrCloseCursor(e) {
+        let standCursorStat = this.midiPlayer.getStandCursorStat();
+        this.midiPlayer.openOrCloseCursor();
+        let stat = 0;
+        if (!standCursorStat) {
+            stat = 1; 
+        } 
+        this.appToolbar.updateMenuStat({
+            detail: {
+                name: 'cursor',
+                stat: stat
+            }
+        });
+    }
+    openOrCloseSqCursor(e) {
+        let sqlCursorStat = this.midiPlayer.getSqCursorStat();
+        this.midiPlayer.openOrCloseSqCursor();
+        let stat = 1;
+        if (!sqlCursorStat) {
+            stat = 2;
+        } 
+        this.appToolbar.updateMenuStat({
+            detail: {
+                name: 'cursor',
+                stat: stat
+            }
+        });
+    }
+
     fileImport(e) {
         return __awaiter(this, void 0, void 0, function* () {
             const element = e.target;
