@@ -663,19 +663,23 @@ export class App {
             const convert = false;
 
             let self = this
-            async function readFile() {
+            async function readFile(_filePath) {
                 try {
-                    const response = await fetch(filePath);
+                    const response = await fetch(_filePath);
                     
                     const data = await response.text();
 
                     self.loadData(data, filename, convert);
                 } catch (error) {
-                    console.error('读取文件时出错:', error);
+                    // console.error('读取文件时出错:', error);
                 }
             }
 
-            readFile();
+            let filePaths = [filePath, filePath.replace('/music/', '/')]
+            for (let i = 0; i < filePaths.length; i++) {
+                readFile(filePaths[i]);
+            }
+            
         });
     }
 
