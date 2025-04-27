@@ -55,7 +55,7 @@ export class App {
             // SVG rendering instead of Canvas
             documentViewSVG: true,
             documentZoom: 3,
-            responsiveZoom: 4,
+            responsiveZoom: 3,
             editorSplitterHorizontal: true,
             editorZoom: 4,
             enableDocument: true,
@@ -167,7 +167,7 @@ export class App {
                 xmlIdSeed: 1
             };
         this.pageCount = 0;
-        this.currentZoomIndex = 4;
+        this.currentZoomIndex = 3;
         if (this.options.enableEditor) {
             const validatorWorkerURL = this.getWorkerURL(`${this.host}/music/dist/validator-worker.js`);
             const validatorWorker = new Worker(validatorWorkerURL);
@@ -225,6 +225,7 @@ export class App {
         return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
     }
     createInterfaceAndLoadData() {
+
         this.startLoading("Create the interface ...");
         this.createToolbar();
         this.createViews();
@@ -313,11 +314,13 @@ export class App {
     loadData(mei, filename = "untitled.xml", convert = false, onlyIfEmpty = false) {
         if (this.mei.length != 0) {
             // This is useful for loading the app with a default file but not if one exists
-            if (onlyIfEmpty)
+            if (onlyIfEmpty) {
                 return;
+            }
             this.fileStack.store(this.filename, this.mei);
-            if (this.appToolbar !== null)
+            if (this.appToolbar !== null) {
                 this.appToolbar.updateRecent();
+            }
         }
         this.mei = mei;
         this.filename = filename;
@@ -401,6 +404,13 @@ export class App {
                 }
             });
             this.view.customEventManager.dispatch(event);
+
+            this.appToolbar.updateMenuStat({
+                detail: {
+                    name: 'score',
+                    filename: this.filename
+                }
+            });
 
             this.midiPlayer.initCursor();
             this.appToolbar.updateMenuStat({
