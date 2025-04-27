@@ -51,14 +51,20 @@ if ( getParameterByName( 'musicxml' ) != null ) convert = false;
 fetch( file )
     .then( function ( response )
     {
-        if ( response.status !== 200 )
-        {
-            alert( 'File could not be fetched, loading default file');
-            throw new Error( "Not 200 response" );
+        // if ( response.status !== 200 )
+        // {
+        //     alert( 'File could not be fetched, loading default file');
+        //     throw new Error( "Not 200 response" );
+        // }
+        if (response.status == 200) {
+            return response.text();
         }
-        return response.text();
+        return "";
     } )
     .then( function ( text )
     {
-        app.loadData( text, file.substring(file.lastIndexOf("/") + 1), convert, onlyIfEmpty );
+        if (text) {
+            app.loadData( text, file.substring(file.lastIndexOf("/") + 1), convert, onlyIfEmpty );
+        }
+        
     } );

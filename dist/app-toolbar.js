@@ -198,16 +198,24 @@ export class AppToolbar extends Toolbar {
 
     loadScoreMenu(scoreMenu, scoreMenuContent) {
         let self = this;
-        fetch('/music/mei/list').then(function (response) {
-                if (response.status !== 200) {
-                    alert( 'File could not be fetched, loading default file');
-                    throw new Error( "Not 200 response" );
+        let paths = ['/music/mei/list', '/mei/list']
+        for (let i = 0; i < paths.length; i++) {
+            fetch(paths[i]).then(function (response) {
+                // if (response.status !== 200) {
+                //     alert( 'File could not be fetched, loading default file');
+                //     throw new Error( "Not 200 response" );
+                // }
+                if (response.status == 200) {
+                    return response.text();
                 }
-                return response.text();
+                return "";
             }).then( function (text) {
-                const fileList = text.split('\n').filter(item => item.length > 0);
-                self.initScoreMenu(scoreMenu, scoreMenuContent, fileList)
+                if (text) {
+                    const fileList = text.split('\n').filter(item => item.length > 0);
+                    self.initScoreMenu(scoreMenu, scoreMenuContent, fileList)
+                }
             });
+        }
     }
     initScoreMenu(scoreMenu, scoreMenuContent, fileList) {
         for (let i = 0; i < fileList.length; i++) {

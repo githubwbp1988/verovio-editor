@@ -198,14 +198,20 @@ export class ResponsiveView extends VerovioView {
                 this.audioContext = new AudioContext();    
             } 
             if (!this.firstTempoSoundBuffer) {
-                this.loadTempoSound('/music/sounds/audio_tempo_up.mp3', (buffer) => { 
-                    self.firstTempoSoundBuffer = buffer; 
-                });
+                let urls = ['/music/sounds/audio_tempo_up.mp3', '/sounds/audio_tempo_up.mp3']
+                for (let i = 0; i < urls.length; i++) {
+                    this.loadTempoSound(urls[i], (buffer) => { 
+                        self.firstTempoSoundBuffer = buffer; 
+                    });
+                }
             }
             if (!this.tempoSoundBuffer) {
-                this.loadTempoSound('/music/sounds/audio_tempo.mp3', (buffer) => { 
-                    self.tempoSoundBuffer = buffer; 
-                });
+                let urls = ['/music/sounds/audio_tempo.mp3', '/sounds/audio_tempo.mp3']
+                for (let i = 0; i < urls.length; i++) {
+                    this.loadTempoSound(urls[i], (buffer) => { 
+                        self.tempoSoundBuffer = buffer; 
+                    });
+                }
             }
         } else {
             alert('Web Audio API is not supported.');
@@ -255,7 +261,9 @@ export class ResponsiveView extends VerovioView {
             .then(data => {
                 return self.audioContext.decodeAudioData(data)
             }).then(buffer => callback(buffer))
-            .catch(error => console.error('Error loading sound:', error));
+            .catch(error => {
+                // console.error('Error loading sound:', error)
+            });
     }
     midiUpdate(time) {
         return __awaiter(this, void 0, void 0, function* () {
