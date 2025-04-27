@@ -208,12 +208,14 @@ export class AppToolbar extends Toolbar {
                 if (response.status == 200) {
                     return response.text();
                 }
-                return "";
+                return null;
             }).then( function (text) {
                 if (text) {
                     const fileList = text.split('\n').filter(item => item.length > 0);
                     self.initScoreMenu(scoreMenu, scoreMenuContent, fileList)
                 }
+            }).catch (err => {
+                
             });
         }
     }

@@ -305,11 +305,26 @@ export class App {
         var xHttp = new XMLHttpRequest();
         xHttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                filterDiv.appendChild(this.responseXML.documentElement);
+                if (!this.filterOk) {
+                    this.filterOk = true;
+                    filterDiv.appendChild(this.responseXML.documentElement);
+                }
             }
         };
         xHttp.open("GET", `${this.host}${filter}`, true);
         xHttp.send();
+
+        var xHttp1 = new XMLHttpRequest();
+        xHttp1.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (!this.filterOk) {
+                    this.filterOk = true;
+                    filterDiv.appendChild(this.responseXML.documentElement);
+                }
+            }
+        };
+        xHttp1.open("GET", `https://music.iflamer.com/svg/filter.xml`, true);
+        xHttp1.send();
     }
     loadData(mei, filename = "untitled.xml", convert = false, onlyIfEmpty = false) {
         if (this.mei.length != 0) {

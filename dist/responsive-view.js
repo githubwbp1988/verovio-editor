@@ -257,10 +257,22 @@ export class ResponsiveView extends VerovioView {
     loadTempoSound(url, callback) {
         let self = this;
         fetch(url)
-            .then(response => response.arrayBuffer())
+            .then(response => {
+                if (response.status == 200) {
+                    return response.arrayBuffer()
+                }
+                return ""
+            })
             .then(data => {
-                return self.audioContext.decodeAudioData(data)
-            }).then(buffer => callback(buffer))
+                if (data) {
+                    return self.audioContext.decodeAudioData(data)
+                }
+                return null;
+            }).then(buffer => {
+                if (buffer) {
+                    callback(buffer)
+                }
+            })
             .catch(error => {
                 // console.error('Error loading sound:', error)
             });
