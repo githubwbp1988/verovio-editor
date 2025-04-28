@@ -198,7 +198,7 @@ export class AppToolbar extends Toolbar {
 
     loadScoreMenu(scoreMenu, scoreMenuContent) {
         let self = this;
-        let paths = ['/music/mei/list', '/mei/list']
+        let paths = ['/mei/list', '/music/mei/list']
         for (let i = 0; i < paths.length; i++) {
             fetch(paths[i]).then(function (response) {
                 // if (response.status !== 200) {

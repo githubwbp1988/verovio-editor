@@ -140,11 +140,16 @@ export class ResponsiveView extends VerovioView {
             }
         }
         this.midiIds = [];
+
+        this.repeatMeasureStartId = null;
+        this.repeatMeasureEndId = null;
+        this.repeatMeasureExecuteFlag = 0;
     }
     seekTempoProcess() {
         if (this.tickstack) {
             this.tickstack = [];
         }
+        this.isTempoValid = false;
     }
     tempoValid(valid) {
         this.isTempoValid = valid;
@@ -189,6 +194,10 @@ export class ResponsiveView extends VerovioView {
         this.tempoPlayFlag = true;
     }
     initMetronomeAudio() {
+        this.repeatMeasureStartId = null;
+        this.repeatMeasureEndId = null;
+        this.repeatMeasureExecuteFlag = 0;
+
         this.isTempoValid = false;
         this.tempoStart();
         /////// 
@@ -198,7 +207,7 @@ export class ResponsiveView extends VerovioView {
                 this.audioContext = new AudioContext();    
             } 
             if (!this.firstTempoSoundBuffer) {
-                let urls = ['/music/sounds/audio_tempo_up.mp3', '/sounds/audio_tempo_up.mp3']
+                let urls = ['/sounds/audio_tempo_up.mp3', '/music/sounds/audio_tempo_up.mp3']
                 for (let i = 0; i < urls.length; i++) {
                     this.loadTempoSound(urls[i], (buffer) => { 
                         self.firstTempoSoundBuffer = buffer; 
@@ -206,7 +215,7 @@ export class ResponsiveView extends VerovioView {
                 }
             }
             if (!this.tempoSoundBuffer) {
-                let urls = ['/music/sounds/audio_tempo.mp3', '/sounds/audio_tempo.mp3']
+                let urls = ['/sounds/audio_tempo.mp3', '/music/sounds/audio_tempo.mp3']
                 for (let i = 0; i < urls.length; i++) {
                     this.loadTempoSound(urls[i], (buffer) => { 
                         self.tempoSoundBuffer = buffer; 
@@ -304,9 +313,10 @@ export class ResponsiveView extends VerovioView {
 
             let self = this;
 
+            let tempo_json_str = yield this.app.verovio.getTempo(vrvTime);
+            let tempoObj = JSON.parse(tempo_json_str)
+
             if (this.isTempoValid && this.tempoPlayFlag) {
-                let tempo_json_str = yield this.app.verovio.getTempo(vrvTime);
-                let tempoObj = JSON.parse(tempo_json_str)
                 if (tempoObj) {
                     this.measureBeatsCount = tempoObj.count;
                     if (!this.tempobegin) {
@@ -374,6 +384,23 @@ export class ResponsiveView extends VerovioView {
                             const cursorPoint = _point.matrixTransform(ctm);
                 
                             let _measure = note.closest('g.measure');
+
+                            if (tempoObj) {
+                                if (tempoObj.left == 11) {
+                                    if (_measure.id != this.repeatMeasureStartId) {
+                                        this.repeatMeasureExecuteFlag = 0;
+                                    }
+                                    this.repeatMeasureStartId = _measure.id;
+                                    this.repeatMeasureStartTs = tempoObj.begin;
+                                }
+                                if (tempoObj.right == 13) {
+                                    if (this.repeatMeasureExecuteFlag == 0) {
+                                        this.repeatMeasureEndId = _measure.id
+                                        this.repeatMeasureExecuteFlag = 1;
+                                    }
+                                }
+                            }
+
                             let _system = _measure.closest('g.system');
 
                             let _systemLtPoint = note.ownerSVGElement.createSVGPoint();
@@ -924,6 +951,24 @@ export class ResponsiveView extends VerovioView {
 
                             const cursorPoint = _point.matrixTransform(ctm);
 
+                            let _measure = note.closest('g.measure');
+
+                            if (tempoObj) {
+                                if (tempoObj.left == 11) {
+                                    if (_measure.id != this.repeatMeasureStartId) {
+                                        this.repeatMeasureExecuteFlag = 0;
+                                    }
+                                    this.repeatMeasureStartId = _measure.id
+                                    this.repeatMeasureStartTs = tempoObj.begin;
+                                }
+                                if (tempoObj.right == 13) {
+                                    if (this.repeatMeasureExecuteFlag == 0) {
+                                        this.repeatMeasureEndId = _measure.id
+                                        this.repeatMeasureExecuteFlag = 1;
+                                    }
+                                }
+                            }
+
                             let _system = note.closest('g.system');
 
                             let _systemLtPoint = note.ownerSVGElement.createSVGPoint();
@@ -973,8 +1018,6 @@ export class ResponsiveView extends VerovioView {
                                     sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
                                     sq_cursor.setAttribute('y2', systemRbPoint.y - toolbarHeight);
                                 }
-
-                                let _measure = note.closest('g.measure');
 
                                 if (_measure) {
 
@@ -1418,6 +1461,22 @@ export class ResponsiveView extends VerovioView {
                         if (elementsAtTime.measure) {
                             let _measure = this.svgWrapper.querySelector('#' + elementsAtTime.measure);
                             if (_measure) {
+                                if (tempoObj) {
+                                    if (tempoObj.left == 11) {
+                                        if (_measure.id != this.repeatMeasureStartId) {
+                                            this.repeatMeasureExecuteFlag = 0;
+                                        }
+                                        this.repeatMeasureStartId = _measure.id
+                                        this.repeatMeasureStartTs = tempoObj.begin;
+                                    }
+                                    if (tempoObj.right == 13) {
+                                        if (this.repeatMeasureExecuteFlag == 0) {
+                                            this.repeatMeasureEndId = _measure.id
+                                            this.repeatMeasureExecuteFlag = 1;
+                                        }
+                                    }
+                                }
+
                                 const ctm = _measure.getScreenCTM(); 
 
                                 let _barline = _measure.querySelector('g.barLine');
@@ -1848,6 +1907,27 @@ export class ResponsiveView extends VerovioView {
                             
                         }
                     } else {
+                        if (elementsAtTime.measure) {
+                            let _measure = this.svgWrapper.querySelector('#' + elementsAtTime.measure);
+                            if (_measure) {
+                                if (tempoObj) {
+                                    if (tempoObj.left == 11) {
+                                        if (_measure.id != this.repeatMeasureStartId) {
+                                            this.repeatMeasureExecuteFlag = 0;
+                                        }
+                                        this.repeatMeasureStartId = _measure.id
+                                        this.repeatMeasureStartTs = tempoObj.begin;
+                                    }
+                                    if (tempoObj.right == 13) {
+                                        if (this.repeatMeasureExecuteFlag == 0) {
+                                            this.repeatMeasureEndId = _measure.id
+                                            this.repeatMeasureExecuteFlag = 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         sq_cursor = svg.querySelector('#playback-sq-cursor');
                         if (sq_cursor) {
                             sq_cursor.setAttribute('x1', -100);
@@ -1948,10 +2028,55 @@ export class ResponsiveView extends VerovioView {
                 //////////////////////////////////////////////////////////////////////////////////////////////
 
             } else {
+                let _measure = null;
+                if (elementsAtTime.notes.length > 0) {
+                    for (let i = 0; i < elementsAtTime.notes.length; i++) {
+                        let note = this.svgWrapper.querySelector('#' + elementsAtTime.notes[i]);
+                        if (note) {
+                            _measure = note.closest('g.measure');
+                            break;
+                        }
+                    }
+                } else if (elementsAtTime.rests && elementsAtTime.rests.length > 0) {
+                    for (let i = 0; i < elementsAtTime.rests.length; i++) {
+                        let note = this.svgWrapper.querySelector('#' + elementsAtTime.rests[i]);
+                        if (note) {
+                            _measure = note.closest('g.measure');
+                            break;
+                        }
+                    }
+                } else {
+                    _measure = this.svgWrapper.querySelector('#' + elementsAtTime.measure);
+                }
+                
+                if (_measure && tempoObj) {
+                    if (tempoObj.left == 11) {
+                        this.repeatMeasureStartId = _measure.id
+                        this.repeatMeasureStartTs = tempoObj.begin;
+                    }
+                    if (tempoObj.right == 13) {
+                        if (this.repeatMeasureExecuteFlag == 0) {
+                            this.repeatMeasureEndId = _measure.id
+                            this.repeatMeasureExecuteFlag = 1;
+                        }
+                    }
+                }
+
                 let sq_cursor = svg.querySelector('#playback-sq-cursor');
                 if (sq_cursor) {
                     sq_cursor.setAttribute('x1', -100);
                     sq_cursor.setAttribute('x2', -100);
+                }
+            }
+
+            if (this.repeatMeasureStartId && this.repeatMeasureEndId) {
+                if (this.repeatMeasureExecuteFlag == 1) {
+                    // jump to start
+                    let jumpRepeatTsOffset = tempoObj.begin + tempoObj.beatduration * tempoObj.count - vrvTime;
+                    setTimeout(() => {
+                        self.app.midiPlayer.repeatBaseScore(this.repeatMeasureStartTs);
+                    }, jumpRepeatTsOffset);
+                    this.repeatMeasureExecuteFlag = 2;
                 }
             }
 

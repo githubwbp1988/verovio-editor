@@ -8,7 +8,9 @@ export class MidiPlayer {
         this.midiToolbar = midiToolbar;
         this.midiToolbar.midiPlayer = this;
         this.midiPlayerElement = appendMidiPlayerTo(this.midiToolbar.element, {});
+        
         this.midiPlayerElement.addEventListener('load', () => this.play());
+        this.midiPlayerElement.addEventListener('start', () => this.start());
         this.midiPlayerElement.addEventListener('note', () => this.onUpdateNoteTime(this.midiPlayerElement.currentTime));
         this.midiPlayerElement.addEventListener('stop', (e) => this.onStop(e));
         this.currentTime = 0;
@@ -39,6 +41,7 @@ export class MidiPlayer {
         this.midiPlayerElement.setAttribute('src', midiFile);
         // play called by html-midi-player callback
     }
+    
     play() {
         this.midiPlayerElement.start();
         // html-midi-player time is in seconds
@@ -55,6 +58,11 @@ export class MidiPlayer {
             this.view.tempoStart();
         }
     }
+
+    start() {
+        
+    }
+
     stop() {
         this.currentTime = 0;
         this.currentTimeStr = "0.00";
@@ -91,6 +99,29 @@ export class MidiPlayer {
 
         if (this.view) {
             this.view.seekTempoProcess();
+        }
+    }
+
+    repeatBaseScore(time) {
+        this.stopTimer();
+        this.midiPlayerElement.currentTime = time / 1000;
+        if (this.view) {
+            this.view.seekTempoProcess();
+        }
+
+        this.midiPlayerElement.start();
+        
+        this.totalTime = this.midiPlayerElement.duration * 1000;
+        this.totalTimeStr = this.samplesToTime(this.totalTime);
+        this.currentTime = this.midiPlayerElement.currentTime * 1000;
+        this.currentTimeStr = this.samplesToTime(this.currentTime);
+        this.startTimer();
+        this.midiToolbar.pausing = false;
+        this.midiToolbar.playing = true;
+        this.midiToolbar.updateAll();
+
+        if (this.view) {
+            this.view.tempoStart();
         }
     }
 

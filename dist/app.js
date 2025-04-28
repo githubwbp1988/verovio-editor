@@ -180,11 +180,14 @@ export class App {
         this.appReset = false;
         this.mei = "";
         this.filename = "untitled.xml";
-        const last = this.fileStack.getLast();
-        if (last) {
-            console.log("Reloading", last.filename);
-            this.loadData(last.data, last.filename);
-        }
+
+        // reson: - 通过手机微信打开 加载缓存 出现 空白页面 观感不好, 暂且注释掉
+        // const last = this.fileStack.getLast();
+        // if (last) {
+        //     console.log("Reloading", last.filename);
+        //     this.loadData(last.data, last.filename);
+        // }
+
         // Listen and wait for Module to emit onRuntimeInitialized
         // this.startLoading("Loading Verovio ...");
         this.startLoading("载入中 ...");
@@ -192,26 +195,26 @@ export class App {
             const version = yield this.verovio.getVersion();
             console.log(version);
             this.endLoading();
-            if (this.options.enableEditor) {
-                // this.startLoading("Loading the XML validator ...");
-                this.startLoading("验证加载 ...");
-                // Listen and wait for Module to emit onRuntimeInitialized
-                this.validator.onRuntimeInitialized().then(() => __awaiter(this, void 0, void 0, function* () {
-                    this.currentSchema = this.options.schema;
-                    const response = yield fetch(this.currentSchema);
-                    const data = yield response.text();
-                    if (this.options.enableValidation) {
-                        const res = yield this.validator.setRelaxNGSchema(data);
-                        console.log("Schema loaded", res);
-                    }
-                    this.rngLoader.setRelaxNGSchema(data);
-                    this.endLoading();
-                    this.createInterfaceAndLoadData();
-                }));
-            }
-            else {
-                this.createInterfaceAndLoadData();
-            }
+            // if (this.options.enableEditor) {
+            //     // this.startLoading("Loading the XML validator ...");
+            //     this.startLoading("验证加载 ...");
+            //     // Listen and wait for Module to emit onRuntimeInitialized
+            //     this.validator.onRuntimeInitialized().then(() => __awaiter(this, void 0, void 0, function* () {
+            //         this.currentSchema = this.options.schema;
+            //         const response = yield fetch(this.currentSchema);
+            //         const data = yield response.text();
+            //         if (this.options.enableValidation) {
+            //             const res = yield this.validator.setRelaxNGSchema(data);
+            //             console.log("Schema loaded", res);
+            //         }
+            //         this.rngLoader.setRelaxNGSchema(data);
+            //         this.endLoading();
+            //         this.createInterfaceAndLoadData();
+            //     }));
+            // }
+            // else {
+            this.createInterfaceAndLoadData();
+            // }
         }));
     }
     destroy() {
@@ -233,9 +236,11 @@ export class App {
         this.customEventManager.bind(this, 'onResized', this.onResized);
         let event = new CustomEvent('onResized');
         this.customEventManager.dispatch(event);
-        if (this.options.isSafari) {
-            this.showNotification("It seems that you are using Safari, on which XML validation unfortunately does not work.<br/>Please use another browser to have XML validation enabled.");
-        }
+
+        // if (this.options.isSafari) {
+        //     this.showNotification("It seems that you are using Safari, on which XML validation unfortunately does not work.<br/>Please use another browser to have XML validation enabled.");
+        // }
+
         this.appIsLoaded = true;
         this.endLoading();
         if (this.mei) {
@@ -302,17 +307,6 @@ export class App {
     }
     createFilter() {
         const filterDiv = appendDivTo(this.element, { class: `vrv-filter` });
-        var xHttp = new XMLHttpRequest();
-        xHttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                if (!this.filterOk) {
-                    this.filterOk = true;
-                    filterDiv.appendChild(this.responseXML.documentElement);
-                }
-            }
-        };
-        xHttp.open("GET", `${this.host}${filter}`, true);
-        xHttp.send();
 
         var xHttp1 = new XMLHttpRequest();
         xHttp1.onreadystatechange = function () {
@@ -325,6 +319,18 @@ export class App {
         };
         xHttp1.open("GET", `https://music.iflamer.com/svg/filter.xml`, true);
         xHttp1.send();
+
+        var xHttp = new XMLHttpRequest();
+        xHttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (!this.filterOk) {
+                    this.filterOk = true;
+                    filterDiv.appendChild(this.responseXML.documentElement);
+                }
+            }
+        };
+        xHttp.open("GET", `${this.host}${filter}`, true);
+        xHttp.send();
     }
     loadData(mei, filename = "untitled.xml", convert = false, onlyIfEmpty = false) {
         if (this.mei.length != 0) {
@@ -682,15 +688,17 @@ export class App {
                 try {
                     const response = await fetch(_filePath);
                     
-                    const data = await response.text();
+                    if (response.status == 200) {
+                        const data = await response.text();
 
-                    self.loadData(data, filename, convert);
+                        self.loadData(data, filename, convert);
+                    }
                 } catch (error) {
                     // console.error('读取文件时出错:', error);
                 }
             }
 
-            let filePaths = [filePath, filePath.replace('/music/', '/')]
+            let filePaths = [filePath.replace('/music/', '/'), filePath]
             for (let i = 0; i < filePaths.length; i++) {
                 readFile(filePaths[i]);
             }
