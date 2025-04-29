@@ -144,12 +144,18 @@ export class ResponsiveView extends VerovioView {
         this.repeatMeasureStartId = null;
         this.repeatMeasureEndId = null;
         this.repeatMeasureExecuteFlag = 0;
+
+        this.mscoreEnding1Id = null;
+        this.mscoreEnding2Id = null;
+        this.mscoreEnding1TsStat = 0;
+        this.mscoreEnding2TsStat = 0;
     }
     seekTempoProcess() {
         if (this.tickstack) {
             this.tickstack = [];
         }
         this.isTempoValid = false;
+        this.app.updateTempoStat();
     }
     tempoValid(valid) {
         this.isTempoValid = valid;
@@ -197,6 +203,11 @@ export class ResponsiveView extends VerovioView {
         this.repeatMeasureStartId = null;
         this.repeatMeasureEndId = null;
         this.repeatMeasureExecuteFlag = 0;
+
+        this.mscoreEnding1Id = null;
+        this.mscoreEnding2Id = null;
+        this.mscoreEnding1TsStat = 0;
+        this.mscoreEnding2TsStat = 0;
 
         this.isTempoValid = false;
         this.tempoStart();
@@ -296,6 +307,7 @@ export class ResponsiveView extends VerovioView {
                 //console.debug( "Nothing returned by getElementsAtTime" );
                 return;
             }
+            
             if (elementsAtTime.page != this.currentPage) {
                 this.currentPage = elementsAtTime.page;
                 this.app.startLoading("Loading content ...", true);
@@ -385,6 +397,65 @@ export class ResponsiveView extends VerovioView {
                 
                             let _measure = note.closest('g.measure');
 
+                            let _system = _measure.closest('g.system');
+
+                            if (!this.mscoreEnding1Id) {
+                                let _mscoreEnding1 = _system.querySelector('g.mscore-ending-1')
+                                if (_mscoreEnding1) {
+                                    let ____matchedMeasureArray = [];
+                                    let ____systemMeasureGroups = _system.querySelectorAll('g.measure');
+                                    for (let i = 0; i < ____systemMeasureGroups.length; i++) {
+                                        if (____systemMeasureGroups[i].getBBox().x >= _mscoreEnding1.getBBox().x) {
+                                            ____matchedMeasureArray.push(____systemMeasureGroups[i])
+                                        }
+                                    }
+                                    ____matchedMeasureArray = ____matchedMeasureArray.sort((a, b) => a.getBBox().x < b.getBBox().x);
+                                    if (____matchedMeasureArray.length > 0) {
+                                        this.mscoreEnding1Id = ____matchedMeasureArray[0].id;
+
+                                        if (this.mscoreEnding1Id == _measure.id) {
+                                            this.mscoreEnding1Ts = tempoObj.begin;
+                                            this.mscoreEnding1TsStat = 1;
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (!this.mscoreEnding1TsStat) {
+                                    if (this.mscoreEnding1Id == _measure.id) {
+                                        this.mscoreEnding1Ts = tempoObj.begin;
+                                        this.mscoreEnding1TsStat = 1;
+                                    }
+                                }
+                            }
+                            if (!this.mscoreEnding2Id) {
+                                let _mscoreEnding2 = _system.querySelector('g.mscore-ending-2')
+                                if (_mscoreEnding2) {
+                                    let ____matchedMeasureArray = [];
+                                    let ____systemMeasureGroups = _system.querySelectorAll('g.measure');
+
+                                    for (let i = 0; i < ____systemMeasureGroups.length; i++) {
+                                        if (____systemMeasureGroups[i].getBBox().x >= _mscoreEnding2.getBBox().x) {
+                                            ____matchedMeasureArray.push(____systemMeasureGroups[i])
+                                        }
+                                    }
+
+                                    ____matchedMeasureArray = ____matchedMeasureArray.sort((a, b) => a.getBBox().x < b.getBBox().x);
+                                    if (____matchedMeasureArray.length > 0) {
+                                        this.mscoreEnding2Id = ____matchedMeasureArray[0].id;
+
+                                        let _mscoreEndingMeasureNote = ____matchedMeasureArray[0].querySelector('g.note')
+                                        if (_mscoreEndingMeasureNote) {
+                                            let _mscoreEndingMeasureNoteTime = yield this.app.verovio.getTimeForElement(_mscoreEndingMeasureNote.id)
+                                            let _mscoreEndingMeasure_tempo_json_str = yield this.app.verovio.getTempo(_mscoreEndingMeasureNoteTime);
+                                            let mscoreEndingMeasureTempoObj = JSON.parse(_mscoreEndingMeasure_tempo_json_str);
+                                            
+                                            this.mscoreEnding2Ts = mscoreEndingMeasureTempoObj.begin;
+                                            this.mscoreEnding2TsStat = 1;
+                                        }
+                                    }
+                                }
+                            }
+
                             if (tempoObj) {
                                 if (tempoObj.left == 11) {
                                     if (_measure.id != this.repeatMeasureStartId) {
@@ -397,11 +468,55 @@ export class ResponsiveView extends VerovioView {
                                     if (this.repeatMeasureExecuteFlag == 0) {
                                         this.repeatMeasureEndId = _measure.id
                                         this.repeatMeasureExecuteFlag = 1;
+
+                                        if (this.mscoreEnding1Id && !this.mscoreEnding2Id) {
+                                            // let page = _system.closest('g.page-margin');
+                                            // if (page) {
+                                            //     let ___systemGroups = page.querySelectorAll('g.system');
+                                            //     let _systemGroups = []
+                                            //     for (let i = 0; i < ___systemGroups.length; i++) {
+                                            //         if (___systemGroups[i].id != _system.id) {
+                                            //             _systemGroups.push(___systemGroups[i]);
+                                            //         }
+                                            //     }
+                                            //     let _delgateSystemNotes = [];
+                                            //     for (let j = 0; j < _systemGroups.length; j++) {
+                                            //         let _singleSystem = _systemGroups[j];
+
+                                            //         let delgateSystemNote = _singleSystem.querySelector('g.note');
+                                            //         if (!delgateSystemNote) {
+                                            //             delgateSystemNote = _singleSystem.querySelector('g.rest');
+                                            //         }
+
+                                            //         if (delgateSystemNote) {
+                                            //             let _delgateSystemNoteTime = yield this.app.verovio.getTimeForElement(delgateSystemNote.id)
+                                            //             _delgateSystemNotes.push({
+                                            //                 y: _singleSystem.getBBox().y,
+                                            //                 system: _singleSystem,
+                                            //                 time: _delgateSystemNoteTime
+                                            //             })
+                                            //         }
+                                            //     }
+                                            //     _delgateSystemNotes = _delgateSystemNotes.filter(item => item.y > _system.getBBox().y).sort((a, b) => a.y < b.y)
+                                            //     if (_delgateSystemNotes.length > 0) {
+                                            //         let delgatemeasure1 = _delgateSystemNotes[0].system.querySelector('g.measure');
+                                            //         let delgatenote1 = delgatemeasure1.querySelector('g.note');
+                                            //         let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id);
+
+                                            //         let _mscoreEndingMeasure_tempo_json_str = yield this.app.verovio.getTempo(delgatenoteTime1);
+                                            //         let mscoreEndingMeasureTempoObj = JSON.parse(_mscoreEndingMeasure_tempo_json_str);
+                                                    
+                                            //         this.mscoreEnding2Ts = mscoreEndingMeasureTempoObj.begin;
+                                            //         this.mscoreEnding2TsStat = 1;
+                                            //     }
+                                            // }
+
+                                            this.mscoreEnding2Ts = tempoObj.begin + tempoObj.beatduration * tempoObj.count;
+                                            this.mscoreEnding2TsStat = 1;
+                                        }
                                     }
                                 }
                             }
-
-                            let _system = _measure.closest('g.system');
 
                             let _systemLtPoint = note.ownerSVGElement.createSVGPoint();
                             let _systemBBox = _system.getBBox()
@@ -953,23 +1068,127 @@ export class ResponsiveView extends VerovioView {
 
                             let _measure = note.closest('g.measure');
 
+                            let _system = note.closest('g.system');
+
+                            if (!this.mscoreEnding1Id) {
+                                let _mscoreEnding1 = _system.querySelector('g.mscore-ending-1')
+                                if (_mscoreEnding1) {
+                                    let ____matchedMeasureArray = [];
+                                    let ____systemMeasureGroups = _system.querySelectorAll('g.measure');
+                                    for (let i = 0; i < ____systemMeasureGroups.length; i++) {
+                                        if (____systemMeasureGroups[i].getBBox().x >= _mscoreEnding1.getBBox().x) {
+                                            ____matchedMeasureArray.push(____systemMeasureGroups[i])
+                                        }
+                                    }
+                                    ____matchedMeasureArray = ____matchedMeasureArray.sort((a, b) => a.getBBox().x < b.getBBox().x);
+                                    if (____matchedMeasureArray.length > 0) {
+                                        this.mscoreEnding1Id = ____matchedMeasureArray[0].id;
+
+                                        if (this.mscoreEnding1Id == _measure.id) {
+                                            this.mscoreEnding1Ts = tempoObj.begin;
+                                            this.mscoreEnding1TsStat = 1;
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (!this.mscoreEnding1TsStat) {
+                                    if (this.mscoreEnding1Id == _measure.id) {
+                                        this.mscoreEnding1Ts = tempoObj.begin;
+                                        this.mscoreEnding1TsStat = 1;
+                                    }
+                                }
+                            }
+                            if (!this.mscoreEnding2Id) {
+                                let _mscoreEnding2 = _system.querySelector('g.mscore-ending-2')
+                                if (_mscoreEnding2) {
+                                    let ____matchedMeasureArray = [];
+                                    let ____systemMeasureGroups = _system.querySelectorAll('g.measure');
+
+                                    for (let i = 0; i < ____systemMeasureGroups.length; i++) {
+                                        if (____systemMeasureGroups[i].getBBox().x >= _mscoreEnding2.getBBox().x) {
+                                            ____matchedMeasureArray.push(____systemMeasureGroups[i])
+                                        }
+                                    }
+
+                                    ____matchedMeasureArray = ____matchedMeasureArray.sort((a, b) => a.getBBox().x < b.getBBox().x);
+                                    if (____matchedMeasureArray.length > 0) {
+                                        this.mscoreEnding2Id = ____matchedMeasureArray[0].id;
+                                    }
+
+                                    let _mscoreEndingMeasureNote = ____matchedMeasureArray[0].querySelector('g.note')
+                                    if (_mscoreEndingMeasureNote) {
+                                        let _mscoreEndingMeasureNoteTime = yield this.app.verovio.getTimeForElement(_mscoreEndingMeasureNote.id)
+                                        let _mscoreEndingMeasure_tempo_json_str = yield this.app.verovio.getTempo(_mscoreEndingMeasureNoteTime);
+                                        let mscoreEndingMeasureTempoObj = JSON.parse(_mscoreEndingMeasure_tempo_json_str);
+                                        
+                                        this.mscoreEnding2Ts = mscoreEndingMeasureTempoObj.begin;
+                                        this.mscoreEnding2TsStat = 1;
+                                    }
+                                }
+                            }
+
+
                             if (tempoObj) {
                                 if (tempoObj.left == 11) {
                                     if (_measure.id != this.repeatMeasureStartId) {
                                         this.repeatMeasureExecuteFlag = 0;
                                     }
-                                    this.repeatMeasureStartId = _measure.id
+                                    this.repeatMeasureStartId = _measure.id;
                                     this.repeatMeasureStartTs = tempoObj.begin;
                                 }
                                 if (tempoObj.right == 13) {
                                     if (this.repeatMeasureExecuteFlag == 0) {
                                         this.repeatMeasureEndId = _measure.id
                                         this.repeatMeasureExecuteFlag = 1;
+
+                                        if (this.mscoreEnding1Id && !this.mscoreEnding2Id) {
+                                            // let page = _system.closest('g.page-margin');
+                                            // if (page) {
+                                            //     let ___systemGroups = page.querySelectorAll('g.system');
+                                            //     let _systemGroups = []
+                                            //     for (let i = 0; i < ___systemGroups.length; i++) {
+                                            //         if (___systemGroups[i].id != _system.id) {
+                                            //             _systemGroups.push(___systemGroups[i]);
+                                            //         }
+                                            //     }
+                                            //     let _delgateSystemNotes = [];
+                                            //     for (let j = 0; j < _systemGroups.length; j++) {
+                                            //         let _singleSystem = _systemGroups[j];
+
+                                            //         let delgateSystemNote = _singleSystem.querySelector('g.note');
+                                            //         if (!delgateSystemNote) {
+                                            //             delgateSystemNote = _singleSystem.querySelector('g.rest');
+                                            //         }
+
+                                            //         if (delgateSystemNote) {
+                                            //             let _delgateSystemNoteTime = yield this.app.verovio.getTimeForElement(delgateSystemNote.id)
+                                            //             _delgateSystemNotes.push({
+                                            //                 y: _singleSystem.getBBox().y,
+                                            //                 system: _singleSystem,
+                                            //                 time: _delgateSystemNoteTime
+                                            //             })
+                                            //         }
+                                            //     }
+                                            //     _delgateSystemNotes = _delgateSystemNotes.filter(item => item.y > _system.getBBox().y).sort((a, b) => a.y < b.y)
+                                            //     if (_delgateSystemNotes.length > 0) {
+                                            //         let delgatemeasure1 = _delgateSystemNotes[0].system.querySelector('g.measure');
+                                            //         let delgatenote1 = delgatemeasure1.querySelector('g.note');
+                                            //         let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id);
+
+                                            //         let _mscoreEndingMeasure_tempo_json_str = yield this.app.verovio.getTempo(delgatenoteTime1);
+                                            //         let mscoreEndingMeasureTempoObj = JSON.parse(_mscoreEndingMeasure_tempo_json_str);
+                                                    
+                                            //         this.mscoreEnding2Ts = mscoreEndingMeasureTempoObj.begin;
+                                            //         this.mscoreEnding2TsStat = 1;
+                                            //     }
+                                            // }
+
+                                            this.mscoreEnding2Ts = tempoObj.begin + tempoObj.beatduration * tempoObj.count;
+                                            this.mscoreEnding2TsStat = 1;
+                                        }
                                     }
                                 }
                             }
-
-                            let _system = note.closest('g.system');
 
                             let _systemLtPoint = note.ownerSVGElement.createSVGPoint();
                             let _systemBBox = _system.getBBox()
@@ -2048,19 +2267,128 @@ export class ResponsiveView extends VerovioView {
                 } else {
                     _measure = this.svgWrapper.querySelector('#' + elementsAtTime.measure);
                 }
-                
-                if (_measure && tempoObj) {
-                    if (tempoObj.left == 11) {
-                        this.repeatMeasureStartId = _measure.id
-                        this.repeatMeasureStartTs = tempoObj.begin;
+
+                if (_measure) {
+                    let _system = _measure.closest('g.system');
+                    
+                    if (!this.mscoreEnding1Id) {
+                        let _mscoreEnding1 = _system.querySelector('g.mscore-ending-1')
+                        if (_mscoreEnding1) {
+                            let ____matchedMeasureArray = []
+                            let ____systemMeasureGroups = _system.querySelectorAll('g.measure');
+                            for (let i = 0; i < ____systemMeasureGroups.length; i++) {
+                                if (____systemMeasureGroups[i].getBBox().x >= _mscoreEnding1.getBBox().x) {
+                                    ____matchedMeasureArray.push(____systemMeasureGroups[i]);
+                                }
+                            }
+                            ____matchedMeasureArray = ____systemMeasureGroups.sort((a, b) => a.getBBox().x < b.getBBox().x);
+                            if (____matchedMeasureArray.length > 0) {
+                                this.mscoreEnding1Id = ____matchedMeasureArray[0].id;
+    
+                                if (this.mscoreEnding1Id == _measure.id) {
+                                    this.mscoreEnding1Ts = tempoObj.begin;
+                                    this.mscoreEnding1TsStat = 1;
+                                }
+                            }
+                        }
+                    } else {
+                        if (!this.mscoreEnding1TsStat) {
+                            if (this.mscoreEnding1Id == _measure.id) {
+                                this.mscoreEnding1Ts = tempoObj.begin;
+                                this.mscoreEnding1TsStat = 1;
+                            }
+                        }
                     }
-                    if (tempoObj.right == 13) {
-                        if (this.repeatMeasureExecuteFlag == 0) {
-                            this.repeatMeasureEndId = _measure.id
-                            this.repeatMeasureExecuteFlag = 1;
+                    if (!this.mscoreEnding2Id) {
+                        let _mscoreEnding2 = _system.querySelector('g.mscore-ending-2')
+                        if (_mscoreEnding2) {
+                            let ____matchedMeasureArray = []
+                            let ____systemMeasureGroups = _system.querySelectorAll('g.measure');
+                            for (let i = 0; i < ____systemMeasureGroups.length; i++) {
+                                if (____systemMeasureGroups[i].getBBox().x >= _mscoreEnding2.getBBox().x) {
+                                    ____matchedMeasureArray.push(____systemMeasureGroups[i]);
+                                }
+                            }
+                            ____matchedMeasureArray = ____systemMeasureGroups.sort((a, b) => a.getBBox().x < b.getBBox().x);
+                            if (____matchedMeasureArray.length > 0) {
+                                this.mscoreEnding2Id = ____matchedMeasureArray[0].id;
+                            }
+
+                            let _mscoreEndingMeasureNote = ____matchedMeasureArray[0].querySelector('g.note')
+                            if (_mscoreEndingMeasureNote) {
+                                let _mscoreEndingMeasureNoteTime = yield this.app.verovio.getTimeForElement(_mscoreEndingMeasureNote.id)
+                                let _mscoreEndingMeasure_tempo_json_str = yield this.app.verovio.getTempo(_mscoreEndingMeasureNoteTime);
+                                let mscoreEndingMeasureTempoObj = JSON.parse(_mscoreEndingMeasure_tempo_json_str);
+                                
+                                this.mscoreEnding2Ts = mscoreEndingMeasureTempoObj.begin;
+                                this.mscoreEnding2TsStat = 1;
+                            }
+                        }
+                    }
+
+                    if (tempoObj) {
+                        if (tempoObj.left == 11) {
+                            if (_measure.id != this.repeatMeasureStartId) {
+                                this.repeatMeasureExecuteFlag = 0;
+                            }
+                            this.repeatMeasureStartId = _measure.id;
+                            this.repeatMeasureStartTs = tempoObj.begin;
+                        }
+                        if (tempoObj.right == 13) {
+                            if (this.repeatMeasureExecuteFlag == 0) {
+                                this.repeatMeasureEndId = _measure.id
+                                this.repeatMeasureExecuteFlag = 1;
+    
+                                if (this.mscoreEnding1Id && !this.mscoreEnding2Id) {
+                                    // let page = _system.closest('g.page-margin');
+                                    // if (page) {
+                                    //     let ___systemGroups = page.querySelectorAll('g.system');
+                                    //     let _systemGroups = []
+                                    //     for (let i = 0; i < ___systemGroups.length; i++) {
+                                    //         if (___systemGroups[i].id != _system.id) {
+                                    //             _systemGroups.push(___systemGroups[i]);
+                                    //         }
+                                    //     }
+                                    //     let _delgateSystemNotes = [];
+                                    //     for (let j = 0; j < _systemGroups.length; j++) {
+                                    //         let _singleSystem = _systemGroups[j];
+    
+                                    //         let delgateSystemNote = _singleSystem.querySelector('g.note');
+                                    //         if (!delgateSystemNote) {
+                                    //             delgateSystemNote = _singleSystem.querySelector('g.rest');
+                                    //         }
+    
+                                    //         if (delgateSystemNote) {
+                                    //             let _delgateSystemNoteTime = yield this.app.verovio.getTimeForElement(delgateSystemNote.id)
+                                    //             _delgateSystemNotes.push({
+                                    //                 y: _singleSystem.getBBox().y,
+                                    //                 system: _singleSystem,
+                                    //                 time: _delgateSystemNoteTime
+                                    //             })
+                                    //         }
+                                    //     }
+                                    //     _delgateSystemNotes = _delgateSystemNotes.filter(item => item.y > _system.getBBox().y).sort((a, b) => a.y < b.y)
+                                    //     if (_delgateSystemNotes.length > 0) {
+                                    //         let delgatemeasure1 = _delgateSystemNotes[0].system.querySelector('g.measure');
+                                    //         let delgatenote1 = delgatemeasure1.querySelector('g.note');
+                                    //         let delgatenoteTime1 = yield this.app.verovio.getTimeForElement(delgatenote1.id);
+    
+                                    //         let _mscoreEndingMeasure_tempo_json_str = yield this.app.verovio.getTempo(delgatenoteTime1);
+                                    //         let mscoreEndingMeasureTempoObj = JSON.parse(_mscoreEndingMeasure_tempo_json_str);
+                                            
+                                    //         this.mscoreEnding2Ts = mscoreEndingMeasureTempoObj.begin;
+                                    //         this.mscoreEnding2TsStat = 1;
+                                    //     }
+                                    // }
+
+                                    this.mscoreEnding2Ts = tempoObj.begin + tempoObj.beatduration * tempoObj.count;
+                                    this.mscoreEnding2TsStat = 1;
+                                }
+                            }
                         }
                     }
                 }
+
 
                 let sq_cursor = svg.querySelector('#playback-sq-cursor');
                 if (sq_cursor) {
@@ -2071,12 +2399,29 @@ export class ResponsiveView extends VerovioView {
 
             if (this.repeatMeasureStartId && this.repeatMeasureEndId) {
                 if (this.repeatMeasureExecuteFlag == 1) {
+                    if (this.stand_cursor && this.sq_cursor_flash) {
+                        this.app.closeSqCursor();
+                    }
                     // jump to start
                     let jumpRepeatTsOffset = tempoObj.begin + tempoObj.beatduration * tempoObj.count - vrvTime;
                     setTimeout(() => {
-                        self.app.midiPlayer.repeatBaseScore(this.repeatMeasureStartTs);
+                        this.app.midiPlayer.repeatBaseScore(this.repeatMeasureStartTs);
                     }, jumpRepeatTsOffset);
                     this.repeatMeasureExecuteFlag = 2;
+                }
+            }
+
+            if (this.mscoreEnding1Id && this.mscoreEnding2Id) {
+                if (this.mscoreEnding1TsStat == 1 && this.mscoreEnding2TsStat == 1) {
+                    if (vrvTime < this.mscoreEnding1Ts 
+                        && this.mscoreEnding1Ts - vrvTime < tempoObj.beatduration * tempoObj.count * 2
+                        && this.mscoreEnding1Ts - vrvTime >= tempoObj.beatduration * tempoObj.count / 2) {
+                        
+                        setTimeout(() => {
+                            this.app.midiPlayer.jumpBaseScore(this.mscoreEnding2Ts);
+                        }, this.mscoreEnding1Ts - vrvTime);
+                        this.mscoreEnding2TsStat = 2; 
+                    }
                 }
             }
 

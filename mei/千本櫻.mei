@@ -96,10 +96,6 @@
                      </staff>
                      <tempo xml:id="t1ptnfkm" type="mscore-infer-from-text" midi.bpm="152" staff="1" tstamp="1">
                         <rend glyph.auth="smufl"></rend> = 152</tempo>
-                     <tempo xml:id="t1o0na5q" type="mscore-infer-from-text" midi.bpm="152" staff="1" tstamp="1">
-                        <rend glyph.auth="smufl"></rend> = 152</tempo>
-                     <tempo xml:id="tktw7bk" type="mscore-infer-from-text" midi.bpm="152" staff="1" tstamp="1">
-                        <rend glyph.auth="smufl"></rend> = 152</tempo>
                      <dynam xml:id="d1icmytz" label="mf" staff="2" startid="#czu4o09">mf</dynam>
                   </measure>
                   <measure xml:id="m11n9dxs" n="2">

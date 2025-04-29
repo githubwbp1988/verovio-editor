@@ -103,26 +103,23 @@ export class MidiPlayer {
     }
 
     repeatBaseScore(time) {
-        this.stopTimer();
         this.midiPlayerElement.currentTime = time / 1000;
         if (this.view) {
             this.view.seekTempoProcess();
         }
 
-        this.midiPlayerElement.start();
-        
-        this.totalTime = this.midiPlayerElement.duration * 1000;
-        this.totalTimeStr = this.samplesToTime(this.totalTime);
         this.currentTime = this.midiPlayerElement.currentTime * 1000;
         this.currentTimeStr = this.samplesToTime(this.currentTime);
-        this.startTimer();
-        this.midiToolbar.pausing = false;
-        this.midiToolbar.playing = true;
-        this.midiToolbar.updateAll();
+        
+        this.midiToolbar.updateProgressBar();
 
-        if (this.view) {
-            this.view.tempoStart();
-        }
+        this.pause()
+        setTimeout(() => {
+            this.play();
+        }, 80);
+    }
+    jumpBaseScore(time) {
+        this.repeatBaseScore(time)
     }
 
     openOrCloseTempo() {
@@ -139,6 +136,11 @@ export class MidiPlayer {
     openOrCloseSqCursor() {
         if (this.view) {
             this.view.sqCursorValid(!this.view.getSqCursorValid());
+        }
+    }
+    closeSqCursor() {
+        if (this.view) {
+            this.view.sqCursorValid(false);
         }
     }
     getTempoStat() {

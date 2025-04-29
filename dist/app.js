@@ -450,6 +450,7 @@ export class App {
             });
         });
     }
+    
     applySelection() {
         return __awaiter(this, void 0, void 0, function* () {
             let selection = this.options.selection;
@@ -613,6 +614,14 @@ export class App {
             }
         });
     }
+    updateTempoStat() {
+        this.appToolbar.updateMenuStat({
+            detail: {
+                name: 'tempo',
+                stat: this.midiPlayer.getTempoStat()
+            }
+        });
+    }
 
     openOrCloseCursor(e) {
         let standCursorStat = this.midiPlayer.getStandCursorStat();
@@ -639,6 +648,15 @@ export class App {
             detail: {
                 name: 'cursor',
                 stat: stat
+            }
+        });
+    }
+    closeSqCursor() {
+        this.midiPlayer.closeSqCursor();
+        this.appToolbar.updateMenuStat({
+            detail: {
+                name: 'cursor',
+                stat: 1
             }
         });
     }
