@@ -1056,11 +1056,10 @@ export class ResponsiveView extends VerovioView {
 
                                     staffCheckStat[targetStaffIndex] = true;
 
-                                    if (noteMaxX > noteBBox.x && noteMaxX >= staffBox.x 
+                                    if (noteMaxX != -1 && noteMaxX >= staffBox.x 
+                                        && noteMaxX > noteBBox.x && noteMaxX - noteBBox.x > noteBBox.width * 3 
                                         && noteMaxX <= staffBox.x + staffBox.width 
-                                        && noteMaxY >= staffBox.y 
-                                        && noteMaxY <= staffBox.y + staffBox.height) {
-                                            
+                                        && noteMaxY >= staffBox.y && noteMaxY <= staffBox.y + staffBox.height) {
                                         const __point1 = note.ownerSVGElement.createSVGPoint();
                                         __point1.x = noteMaxX + noteMaxWidth / 2;
                                         __point1.y = noteMaxY + noteMaxHeight;
@@ -1068,6 +1067,7 @@ export class ResponsiveView extends VerovioView {
                                         
                                         cursorArray[targetStaffIndex].setAttribute('x1', cursorPoint1.x);
                                         cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint1.x);
+                                        
                                     } else {
                                         cursorArray[targetStaffIndex].setAttribute('x1', cursorPoint.x);
                                         cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint.x);
