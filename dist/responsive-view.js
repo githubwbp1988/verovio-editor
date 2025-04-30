@@ -382,14 +382,30 @@ export class ResponsiveView extends VerovioView {
                 let sq_cursor = null;
 
                 if (elementsAtTime.notes.length > 0) {
+                    let noteMaxX = -1;
+                    let noteMaxY = -1;
+                    let noteMaxWidth = -1;
+                    let noteMaxHeight = -1;
+                    for (let i = 0; i < elementsAtTime.notes.length; i++) {
+                        let note = this.svgWrapper.querySelector('#' + elementsAtTime.notes[i]);
+                        if (note) {
+                            const noteBBox = note.getBBox();
+                            if (noteBBox.x > noteMaxX) {
+                                noteMaxX = noteBBox.x;
+                                noteMaxY = noteBBox.y;
+                                noteMaxWidth = noteBBox.width;
+                                noteMaxHeight = noteBBox.height;
+                            }
+                        }
+                    }
                     for (let i = 0; i < elementsAtTime.notes.length; i++) {
                         let note = this.svgWrapper.querySelector('#' + elementsAtTime.notes[i]);
                         
                         if (note) {
                             const noteBBox = note.getBBox();
                             const ctm = note.getScreenCTM();                // 当前元素的坐标变换矩阵
-                            const _point = note.ownerSVGElement.createSVGPoint();
-
+                            const _point = note.ownerSVGElement.createSVGPoint();                            
+                            
                             _point.x = noteBBox.x + noteBBox.width / 2;
                             _point.y = noteBBox.y + noteBBox.height;
 
@@ -1040,8 +1056,23 @@ export class ResponsiveView extends VerovioView {
 
                                     staffCheckStat[targetStaffIndex] = true;
 
-                                    cursorArray[targetStaffIndex].setAttribute('x1', cursorPoint.x);
-                                    cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint.x);
+                                    if (noteMaxX > noteBBox.x && noteMaxX >= staffBox.x 
+                                        && noteMaxX <= staffBox.x + staffBox.width 
+                                        && noteMaxY >= staffBox.y 
+                                        && noteMaxY <= staffBox.y + staffBox.height) {
+                                            
+                                        const __point1 = note.ownerSVGElement.createSVGPoint();
+                                        __point1.x = noteMaxX + noteMaxWidth / 2;
+                                        __point1.y = noteMaxY + noteMaxHeight;
+                                        const cursorPoint1 = __point1.matrixTransform(ctm);
+                                        
+                                        cursorArray[targetStaffIndex].setAttribute('x1', cursorPoint1.x);
+                                        cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint1.x);
+                                    } else {
+                                        cursorArray[targetStaffIndex].setAttribute('x1', cursorPoint.x);
+                                        cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint.x);
+                                    }
+
                                     cursorArray[targetStaffIndex].setAttribute('y1', staffLtPoint.y - toolbarHeight);
                                     cursorArray[targetStaffIndex].setAttribute('y2', staffRbPoint.y - toolbarHeight);
 
