@@ -570,11 +570,12 @@ export class ResponsiveView extends VerovioView {
                                     //     || systemLtPoint.y - toolbarHeight != sq_cursor_rawY && systemLtPoint.y - toolbarHeight > sq_cursor_rawY2) {
                                     if (systemLtPoint.y - toolbarHeight == sq_cursor_rawY && cursorPoint.x > sq_cursor_rawX 
                                         || systemLtPoint.y - toolbarHeight != sq_cursor_rawY) {
-                                    
-                                        sq_cursor.setAttribute('x1', cursorPoint.x);
-                                        sq_cursor.setAttribute('x2', cursorPoint.x);
-                                        sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
-                                        sq_cursor.setAttribute('y2', systemRbPoint.y - toolbarHeight);
+                                        if (this.sq_cursor_flash) {
+                                            sq_cursor.setAttribute('x1', cursorPoint.x);
+                                            sq_cursor.setAttribute('x2', cursorPoint.x);
+                                            sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
+                                            sq_cursor.setAttribute('y2', systemRbPoint.y - toolbarHeight);
+                                        }
                                     }
 
                                     let _barline = _measure.querySelector('g.barLine');
@@ -682,10 +683,12 @@ export class ResponsiveView extends VerovioView {
                                                 //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                 if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                     || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                    sq_cursor.setAttribute('x1', destx);
-                                                    sq_cursor.setAttribute('x2', destx);
-                                                    sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                    sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                    if (this.sq_cursor_flash) {
+                                                        sq_cursor.setAttribute('x1', destx);
+                                                        sq_cursor.setAttribute('x2', destx);
+                                                        sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                        sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                    }
                                                 }
                                                 
                                             }, distime)
@@ -892,11 +895,12 @@ export class ResponsiveView extends VerovioView {
                                                         //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                         if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                             || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                        
-                                                            sq_cursor.setAttribute('x1', destx);
-                                                            sq_cursor.setAttribute('x2', destx);
-                                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                            if (this.sq_cursor_flash) {
+                                                                sq_cursor.setAttribute('x1', destx);
+                                                                sq_cursor.setAttribute('x2', destx);
+                                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                            }
                                                         }
                                                     }, distime)
                                                 }
@@ -927,11 +931,12 @@ export class ResponsiveView extends VerovioView {
                                                             //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                             if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                                 || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                            
-                                                                sq_cursor.setAttribute('x1', destx);
-                                                                sq_cursor.setAttribute('x2', destx);
-                                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                                if (this.sq_cursor_flash) {
+                                                                    sq_cursor.setAttribute('x1', destx);
+                                                                    sq_cursor.setAttribute('x2', destx);
+                                                                    sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                                    sq_cursor.setAttribute('y2', measureTsNotes[0].y2);   
+                                                                }
                                                             }
                                                         }, distime)
                                                     }
@@ -968,11 +973,13 @@ export class ResponsiveView extends VerovioView {
                                                             //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                             if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                                 || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                            
-                                                                sq_cursor.setAttribute('x1', destx);
-                                                                sq_cursor.setAttribute('x2', destx);
-                                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                                if (this.sq_cursor_flash) {
+                                                                    sq_cursor.setAttribute('x1', destx);
+                                                                    sq_cursor.setAttribute('x2', destx);
+                                                                    sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                                    sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                                }
+                                                                
                                                             }
                                                         }, distime)
                                                     }
@@ -1204,7 +1211,7 @@ export class ResponsiveView extends VerovioView {
 
                             if (this.sq_cursor_flash) {
                                 sq_cursor = svg.querySelector('#playback-sq-cursor');
-                                if (!sq_cursor) {
+                                if (!this.sq_cursor_flash) {
                                     sq_cursor = document.createElementNS(svgNS, 'line');
                                     sq_cursor.setAttribute('id', 'playback-sq-cursor');
                                     sq_cursor.setAttribute('stroke', 'blue');
@@ -1231,11 +1238,12 @@ export class ResponsiveView extends VerovioView {
                                 //     || systemLtPoint.y - toolbarHeight != sq_cursor_rawY && systemLtPoint.y - toolbarHeight > sq_cursor_rawY2) {
                                 if (systemLtPoint.y - toolbarHeight == sq_cursor_rawY && cursorPoint.x > sq_cursor_rawX 
                                     || systemLtPoint.y - toolbarHeight != sq_cursor_rawY) {
-                                
-                                    sq_cursor.setAttribute('x1', cursorPoint.x);
-                                    sq_cursor.setAttribute('x2', cursorPoint.x);
-                                    sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
-                                    sq_cursor.setAttribute('y2', systemRbPoint.y - toolbarHeight);
+                                    if (this.sq_cursor_flash) {
+                                        sq_cursor.setAttribute('x1', cursorPoint.x);
+                                        sq_cursor.setAttribute('x2', cursorPoint.x);
+                                        sq_cursor.setAttribute('y1', systemLtPoint.y - toolbarHeight);
+                                        sq_cursor.setAttribute('y2', systemRbPoint.y - toolbarHeight);
+                                    }
                                 }
 
                                 if (_measure) {
@@ -1368,10 +1376,12 @@ export class ResponsiveView extends VerovioView {
                                                 //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                 if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                     || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                    sq_cursor.setAttribute('x1', destx);
-                                                    sq_cursor.setAttribute('x2', destx);
-                                                    sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                    sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                    if (this.sq_cursor_flash) {
+                                                        sq_cursor.setAttribute('x1', destx);
+                                                        sq_cursor.setAttribute('x2', destx);
+                                                        sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                        sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                    }
                                                 }
                                             }, distime)
                                         }
@@ -1578,10 +1588,12 @@ export class ResponsiveView extends VerovioView {
                                                             //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                             if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                                 || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                                sq_cursor.setAttribute('x1', destx);
-                                                                sq_cursor.setAttribute('x2', destx);
-                                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                                if (this.sq_cursor_flash) {
+                                                                    sq_cursor.setAttribute('x1', destx);
+                                                                    sq_cursor.setAttribute('x2', destx);
+                                                                    sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                                    sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                                }
                                                             }
                                                         }, distime)
                                                     }
@@ -1611,11 +1623,12 @@ export class ResponsiveView extends VerovioView {
                                                         //     || nextmeasureTsNotes[0].y1 != sq_cursor_rawY && nextmeasureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                         if (nextmeasureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                             || nextmeasureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                        
-                                                            sq_cursor.setAttribute('x1', destx);
-                                                            sq_cursor.setAttribute('x2', destx);
-                                                            sq_cursor.setAttribute('y1', nextmeasureTsNotes[0].y1);
-                                                            sq_cursor.setAttribute('y2', nextmeasureTsNotes[0].y2);
+                                                            if (this.sq_cursor_flash) {
+                                                                sq_cursor.setAttribute('x1', destx);
+                                                                sq_cursor.setAttribute('x2', destx);
+                                                                sq_cursor.setAttribute('y1', nextmeasureTsNotes[0].y1);
+                                                                sq_cursor.setAttribute('y2', nextmeasureTsNotes[0].y2);
+                                                            }
                                                         }
                                                     }, distime)
                                                 }
@@ -1650,10 +1663,12 @@ export class ResponsiveView extends VerovioView {
                                                             //     || nextmeasureTsNotes[0].y1 != sq_cursor_rawY && nextmeasureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                             if (nextmeasureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                                 || nextmeasureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                                sq_cursor.setAttribute('x1', destx);
-                                                                sq_cursor.setAttribute('x2', destx);
-                                                                sq_cursor.setAttribute('y1', nextmeasureTsNotes[0].y1);
-                                                                sq_cursor.setAttribute('y2', nextmeasureTsNotes[0].y2);
+                                                                if (this.sq_cursor_flash) {
+                                                                    sq_cursor.setAttribute('x1', destx);
+                                                                    sq_cursor.setAttribute('x2', destx);
+                                                                    sq_cursor.setAttribute('y1', nextmeasureTsNotes[0].y1);
+                                                                    sq_cursor.setAttribute('y2', nextmeasureTsNotes[0].y2);
+                                                                }
                                                             }
                                                         }, distime)
                                                     }
@@ -1827,10 +1842,12 @@ export class ResponsiveView extends VerovioView {
                                         //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                         if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                             || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                            sq_cursor.setAttribute('x1', destx);
-                                            sq_cursor.setAttribute('x2', destx);
-                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                            if (this.sq_cursor_flash) {
+                                                sq_cursor.setAttribute('x1', destx);
+                                                sq_cursor.setAttribute('x2', destx);
+                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                            }
                                         }
                                         
                                     } else {
@@ -2036,10 +2053,12 @@ export class ResponsiveView extends VerovioView {
                                         //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                         if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                             || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                            sq_cursor.setAttribute('x1', destx);
-                                            sq_cursor.setAttribute('x2', destx);
-                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                            if (this.sq_cursor_flash) {
+                                                sq_cursor.setAttribute('x1', destx);
+                                                sq_cursor.setAttribute('x2', destx);
+                                                sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                            }
                                         }
 
                                         this.measure_barlinegap_time = measureTsNotes[currNoteIndex].time
@@ -2080,10 +2099,12 @@ export class ResponsiveView extends VerovioView {
                                                     //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                     if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                         || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                        sq_cursor.setAttribute('x1', destx);
-                                                        sq_cursor.setAttribute('x2', destx);
-                                                        sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                        sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                        if (this.sq_cursor_flash) {
+                                                            sq_cursor.setAttribute('x1', destx);
+                                                            sq_cursor.setAttribute('x2', destx);
+                                                            sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                            sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -2111,10 +2132,12 @@ export class ResponsiveView extends VerovioView {
                                                 //     || measureTsNotes[0].y1 != sq_cursor_rawY && measureTsNotes[0].y1 > sq_cursor_rawY2) {
                                                 if (measureTsNotes[0].y1 == sq_cursor_rawY && destx > sq_cursor_rawX 
                                                     || measureTsNotes[0].y1 != sq_cursor_rawY) {
-                                                    sq_cursor.setAttribute('x1', destx);
-                                                    sq_cursor.setAttribute('x2', destx);
-                                                    sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
-                                                    sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                    if (this.sq_cursor_flash) {
+                                                        sq_cursor.setAttribute('x1', destx);
+                                                        sq_cursor.setAttribute('x2', destx);
+                                                        sq_cursor.setAttribute('y1', measureTsNotes[0].y1);
+                                                        sq_cursor.setAttribute('y2', measureTsNotes[0].y2);
+                                                    }
                                                 } 
                                             }
                                             
