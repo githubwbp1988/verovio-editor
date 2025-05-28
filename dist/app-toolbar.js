@@ -17,6 +17,7 @@ export class AppToolbar extends Toolbar {
         let iconsDocument = `${app.host}/music/icons/toolbar/document.png`;
         let iconsEditor = `${app.host}/music/icons/toolbar/editor.png`;
         let iconsGithubSignin = `${app.host}/music/icons/toolbar/github-signin.png`;
+        let iconsCommunitySignin = `${app.host}/music/icons/toolbar/developer-community.svg`;
         let iconsLayout = `${app.host}/music/icons/toolbar/layout.png`;
         let iconsResponsive = `${app.host}/music/icons/toolbar/responsive.png`;
         let iconsZoomIn = `${app.host}/music/icons/toolbar/zoom-in.png`;
@@ -185,6 +186,15 @@ export class AppToolbar extends Toolbar {
         // this.app.eventManager.bind(this.logout, 'click', this.app.logout);
         // this.login = appendDivTo(this.loginGroup, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsGithubSignin})` }, 'data-before': `Github` });
         // this.app.eventManager.bind(this.login, 'click', this.app.login);
+
+        // developer community center
+        this.loginGroup = appendDivTo(this.element, { class: `vrv-btn-group-right` });
+        if (!app.options.enableEditor) {
+            this.loginGroup.style.display = 'none';
+        }
+        appendDivTo(this.loginGroup, { class: `vrv-h-separator` });
+        this.developerCenter = appendDivTo(this.loginGroup, { class: `vrv-btn-icon`, style: { backgroundImage: `url(${iconsCommunitySignin})` }, 'data-before': `开发社区` });
+        this.app.eventManager.bind(this.loginGroup, 'click', this.app.login);
         
         // Bindings for hiding menu once an item has be click - the corresponding class is
         // removed when the toolbar is moused over

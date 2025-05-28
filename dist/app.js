@@ -191,10 +191,13 @@ export class App {
         // Listen and wait for Module to emit onRuntimeInitialized
         // this.startLoading("Loading Verovio ...");
         this.startLoading("载入中 ...");
+
+        this.loadBackgroundVideo();
         this.verovio.onRuntimeInitialized().then(() => __awaiter(this, void 0, void 0, function* () {
             const version = yield this.verovio.getVersion();
-            console.log(version);
+            // console.log(version);
             this.endLoading();
+            this.deLoadBackgroundVideo();
             // if (this.options.enableEditor) {
             //     // this.startLoading("Loading the XML validator ...");
             //     this.startLoading("验证加载 ...");
@@ -220,6 +223,43 @@ export class App {
     destroy() {
         this.eventManager.unbindAll();
     }
+
+    loadBackgroundVideo() {
+        if (!this.loadingVideo) {
+            this.loadingVideo = document.createElement('video');
+            this.loadingVideo.id = 'loading-video';
+            this.loadingVideo.autoplay = true;
+            this.loadingVideo.muted = true;
+            this.loadingVideo.loop = true;
+
+            this.loadingVideo.style.position = 'fixed';
+            this.loadingVideo.style.top = '0';
+            this.loadingVideo.style.left = '0';
+            this.loadingVideo.style.width = '100vw';
+            this.loadingVideo.style.height = '100vh';
+            this.loadingVideo.style.objectFit = 'cover';
+            this.loadingVideo.style.zIndex = '9999';
+            // this.loadingVideo.style.backgroundColor = 'black';
+
+            // 创建视频源元素
+            const source = document.createElement('source');
+            source.src = 'mei/loading-video.mp4';
+            source.type = 'video/mp4';
+
+            // 将视频源添加到视频元素
+            this.loadingVideo.appendChild(source);
+
+            // 将视频元素添加到页面
+            document.body.appendChild(this.loadingVideo);
+        }
+        this.loadingVideo.style.display = 'block';
+    }
+    deLoadBackgroundVideo() {
+        if (this.loadingVideo) {
+            this.loadingVideo.style.display = 'none';
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////
     // Class-specific methods
     ////////////////////////////////////////////////////////////////////////
@@ -245,6 +285,8 @@ export class App {
         this.endLoading();
         if (this.mei) {
             this.loadMEI(false);
+        } else {
+            this.deLoadBackgroundVideo();
         }
     }
     createViews() {
@@ -407,6 +449,7 @@ export class App {
         return __awaiter(this, void 0, void 0, function* () {
             // this.startLoading("Loading the MEI data ...");
             this.startLoading("加载MEI数据 ...");
+            this.loadBackgroundVideo();
             yield this.verovio.loadData(this.mei);
             yield this.applySelection();
             this.pageCount = yield this.verovio.getPageCount();
@@ -425,6 +468,8 @@ export class App {
                 }
             });
             this.view.customEventManager.dispatch(event);
+
+            this.deLoadBackgroundVideo();
 
             this.appToolbar.updateMenuStat({
                 detail: {
@@ -868,7 +913,8 @@ export class App {
         });
     }
     login(e) {
-        location.href = `https://github.com/login/oauth/authorize?client_id=${this.clientId}&redirect_uri=${this.host}/oauth/redirect&scope=public_repo%20read:org`;
+        // location.href = `https://github.com/login/oauth/authorize?client_id=${this.clientId}&redirect_uri=${this.host}/oauth/redirect&scope=public_repo%20read:org`;
+        location.href = `https://developer.iflamer.com`;
     }
     logout(e) {
         location.href = `${this.host}/oauth/logout`;

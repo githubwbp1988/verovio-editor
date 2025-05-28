@@ -130,6 +130,13 @@ export class ResponsiveView extends VerovioView {
             }
             this.cachedCursorArray = [];
         }
+        // if (this.cachedViceCursorArray) {
+        //     for (let l = 0; l < this.cachedViceCursorArray.length; l++) {
+        //         this.cachedViceCursorArray[l].setAttribute('x1', -100);
+        //         this.cachedViceCursorArray[l].setAttribute('x2', -100);
+        //     }
+        //     this.cachedViceCursorArray = [];
+        // }
 
         this.tempoStop();
 
@@ -172,6 +179,12 @@ export class ResponsiveView extends VerovioView {
                     this.cachedCursorArray[l].setAttribute('x2', -100);
                 }
             }
+            // if (this.cachedViceCursorArray) {
+            //     for (let l = 0; l < this.cachedViceCursorArray.length; l++) {
+            //         this.cachedViceCursorArray[l].setAttribute('x1', -100);
+            //         this.cachedViceCursorArray[l].setAttribute('x2', -100);
+            //     }
+            // }
         }
     }
     getCursorValid() {
@@ -374,7 +387,9 @@ export class ResponsiveView extends VerovioView {
                 toolbarHeight = toolbarHeight - windowScrollTop;
 
                 let cursorPositioned = [];
+                // let vicecursorPositioned = [];
                 let cursorArray = [];
+                // let vicecursorArray = [];
                 let staffGroups = [];
                 let staffCheckStat = [];
                 let measure = null;
@@ -386,16 +401,26 @@ export class ResponsiveView extends VerovioView {
                     let noteMaxY = -1;
                     let noteMaxWidth = -1;
                     let noteMaxHeight = -1;
+                    let noteMinX = -1;
+                    let noteMinY = -1;
+                    let noteMinWidth = -1;
+                    let noteMinHeight = -1;
                     for (let i = 0; i < elementsAtTime.notes.length; i++) {
                         let note = this.svgWrapper.querySelector('#' + elementsAtTime.notes[i]);
                         if (note) {
                             const noteBBox = note.getBBox();
-                            if (noteBBox.x > noteMaxX) {
+                            if (noteMaxX == -1 || noteBBox.x > noteMaxX) {
                                 noteMaxX = noteBBox.x;
                                 noteMaxY = noteBBox.y;
                                 noteMaxWidth = noteBBox.width;
                                 noteMaxHeight = noteBBox.height;
-                            }
+                            } 
+                            if (noteMinX == -1 || noteBBox.x < noteMinX) {
+                                noteMinX = noteBBox.x;
+                                noteMinY = noteBBox.y;
+                                noteMinWidth = noteBBox.width;
+                                noteMinHeight = noteBBox.height;
+                            } 
                         }
                     }
                     for (let i = 0; i < elementsAtTime.notes.length; i++) {
@@ -549,7 +574,9 @@ export class ResponsiveView extends VerovioView {
                             if (_measure != measure) {
                                 measure = _measure;
                                 cursorPositioned = [];
+                                // vicecursorPositioned = [];
                                 cursorArray = [];
+                                // vicecursorArray = [];
                                 staffGroups = [];
                                 staffCheckStat = [];
 
@@ -1025,7 +1052,21 @@ export class ResponsiveView extends VerovioView {
                                         svg.appendChild(__cursor);
                                     }
                                     cursorArray.push(__cursor);
+
+                                    // let __vicecursor = svg.querySelector('#playback-cursor' + (k + 1) + 'vice');
+                                    // if (!__vicecursor) {
+                                    //     __vicecursor = document.createElementNS(svgNS, 'line');
+                                    //     __vicecursor.setAttribute('id', 'playback-cursor' + (k + 1) + 'vice');
+                                    //     __vicecursor.setAttribute('stroke', 'green');
+                                    //     __vicecursor.setAttribute('stroke-width', '4');
+                                    //     __vicecursor.setAttribute('opacity', '0.6');
+                                        
+                                    //     svg.appendChild(__vicecursor);
+                                    // }
+                                    // vicecursorArray.push(__vicecursor);
+
                                     cursorPositioned.push(false);
+                                    // vicecursorPositioned.push(false);
                                     staffCheckStat.push(false);
                                 }
                             }
@@ -1073,9 +1114,38 @@ export class ResponsiveView extends VerovioView {
                                         cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint.x);
                                     }
 
+                                    // if (noteMaxX > noteMinX && noteMaxX - noteMinX > noteMinWidth * 3 
+                                    //     && noteMaxX <= staffBox.x + staffBox.width 
+                                    //     && noteMaxY >= staffBox.y && noteMaxY <= staffBox.y + staffBox.height
+                                    //     && noteMinX <= staffBox.x + staffBox.width 
+                                    //     && noteMinY >= staffBox.y && noteMinY <= staffBox.y + staffBox.height) {
+
+                                    //     const __point1 = note.ownerSVGElement.createSVGPoint();
+                                    //     __point1.x = noteMinX + noteMinWidth / 2;
+                                    //     __point1.y = noteMinY + noteMinHeight;
+                                    //     const cursorPoint1 = __point1.matrixTransform(ctm);
+                                        
+                                    //     const __point2 = note.ownerSVGElement.createSVGPoint();
+                                    //     __point2.x = noteMaxX + noteMaxWidth / 2;
+                                    //     __point2.y = noteMaxY + noteMaxHeight;
+                                    //     const cursorPoint2 = __point2.matrixTransform(ctm);
+
+                                    //     cursorArray[targetStaffIndex].setAttribute('x1', cursorPoint1.x);
+                                    //     cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint1.x);
+
+                                    //     vicecursorArray[targetStaffIndex].setAttribute('x1', cursorPoint2.x);
+                                    //     vicecursorArray[targetStaffIndex].setAttribute('x2', cursorPoint2.x);
+                                    //     vicecursorArray[targetStaffIndex].setAttribute('y1', staffLtPoint.y - toolbarHeight);
+                                    //     vicecursorArray[targetStaffIndex].setAttribute('y2', staffRbPoint.y - toolbarHeight);
+
+                                    //     vicecursorPositioned[targetStaffIndex] = true;
+                                    // } else {
+                                    //     cursorArray[targetStaffIndex].setAttribute('x1', cursorPoint.x);
+                                    //     cursorArray[targetStaffIndex].setAttribute('x2', cursorPoint.x);
+                                    // }
+
                                     cursorArray[targetStaffIndex].setAttribute('y1', staffLtPoint.y - toolbarHeight);
                                     cursorArray[targetStaffIndex].setAttribute('y2', staffRbPoint.y - toolbarHeight);
-
                                     cursorPositioned[targetStaffIndex] = true;
                                 }
                                 
@@ -2215,87 +2285,141 @@ export class ResponsiveView extends VerovioView {
                         cursorArray[l].setAttribute('x2', -100);
                     }
                 }
+                // for (let l = 0; l < vicecursorPositioned.length; l++) {
+                //     if (!vicecursorPositioned[l]) {
+                //         vicecursorArray[l].setAttribute('x1', -100);
+                //         vicecursorArray[l].setAttribute('x2', -100);
+                //     }
+                // }
 
                 this.cachedCursorArray = cursorArray;
+                // this.cachedViceCursorArray = vicecursorArray;
 
                 //////////////////////////////////////////////////////////////////////////////////////////////
                 const scrollContainer = this.svgWrapper.parentElement;
-                if (scrollContainer && cursorArray.length > 0) {
+                if (scrollContainer) {
                     const containerTop = scrollContainer.offsetTop; // 容器相对于其 offsetParent 的顶部距离
                     const containerBottom = containerTop + scrollContainer.offsetHeight; // 容器底部的绝对位置
                     const scrollY = scrollContainer.scrollTop; // 容器当前的垂直滚动位置
                     const containerViewableHeight = scrollContainer.clientHeight; // 容器的可视高度
 
-                    let cursorYTopRelativeToContainerArray = [];
-                    let cursorYBottomRelativeToContainerArray = [];
-                    // let cursorCenterYRelativeToContainerArray = [];
-                    for (let k = 0; k < cursorArray.length; k++) {
-                        const cursorYTopRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y1'));
-                        const cursorYBottomRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y2'));
+                    if (cursorArray.length > 0) {
+                        let cursorYTopRelativeToContainerArray = [];
+                        let cursorYBottomRelativeToContainerArray = [];
+                        // let cursorCenterYRelativeToContainerArray = [];
 
-                        // const cursorCenterYRelativeToContainer = (parseFloat(cursorArray[k].getAttribute('y1')) + parseFloat(cursorArray[k].getAttribute('y2'))) / 2;
+                        for (let k = 0; k < cursorArray.length; k++) {
+                            const cursorYTopRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y1'));
+                            const cursorYBottomRelativeToContainer = parseFloat(cursorArray[k].getAttribute('y2'));
 
-                        cursorYTopRelativeToContainerArray.push(cursorYTopRelativeToContainer);
-                        cursorYBottomRelativeToContainerArray.push(cursorYBottomRelativeToContainer);
-                        // cursorCenterYRelativeToContainerArray.push(cursorCenterYRelativeToContainer);
+                            // const cursorCenterYRelativeToContainer = (parseFloat(cursorArray[k].getAttribute('y1')) + parseFloat(cursorArray[k].getAttribute('y2'))) / 2;
 
-                    }
+                            cursorYTopRelativeToContainerArray.push(cursorYTopRelativeToContainer);
+                            cursorYBottomRelativeToContainerArray.push(cursorYBottomRelativeToContainer);
+                            // cursorCenterYRelativeToContainerArray.push(cursorCenterYRelativeToContainer);
 
-                    cursorYTopRelativeToContainerArray = cursorYTopRelativeToContainerArray.sort((a, b) => a - b);
-                    cursorYBottomRelativeToContainerArray = cursorYBottomRelativeToContainerArray.sort((a, b) => a - b);
-                    // cursorCenterYRelativeToContainerArray = cursorCenterYRelativeToContainerArray.sort((a, b) => a - b);
+                        }
 
-                    let translateYOffset = 50
-                    // 光标顶部超出可视区域上方
-                    if (cursorYTopRelativeToContainerArray[0] < scrollY) {
-                        // scrollContainer.scrollTop = cursorYTopRelativeToContainerArray[0];
-                        let progressY = cursorYTopRelativeToContainerArray[0] - scrollY - translateYOffset;
-                        svg.style.transform = `translateY(-${progressY}px)`;
+                        cursorYTopRelativeToContainerArray = cursorYTopRelativeToContainerArray.sort((a, b) => a - b);
+                        cursorYBottomRelativeToContainerArray = cursorYBottomRelativeToContainerArray.sort((a, b) => a - b);
+                        // cursorCenterYRelativeToContainerArray = cursorCenterYRelativeToContainerArray.sort((a, b) => a - b);
 
-                        if (this.stand_cursor) {
-                            for (let j = 0; j < cursorArray.length; j++) {
-                                let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
-                                let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
-                                cursorArray[j].setAttribute('y1', y1Val - progressY);
-                                cursorArray[j].setAttribute('y2', y2Val - progressY);
-                            }
-    
-                            if (this.sq_cursor_flash && sq_cursor) {
-                                let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
-                                let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
-                                sq_cursor.setAttribute('y1', y1Val1 - progressY);
-                                sq_cursor.setAttribute('y2', y2Val1 - progressY);
+                        let translateYOffset = 50
+                        // 光标顶部超出可视区域上方
+                        if (cursorYTopRelativeToContainerArray[0] < scrollY) {
+                            // scrollContainer.scrollTop = cursorYTopRelativeToContainerArray[0];
+                            let progressY = cursorYTopRelativeToContainerArray[0] - scrollY - translateYOffset;
+                            svg.style.transform = `translateY(-${progressY}px)`;
+
+                            if (this.stand_cursor) {
+                                for (let j = 0; j < cursorArray.length; j++) {
+                                    let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
+                                    let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
+                                    cursorArray[j].setAttribute('y1', y1Val - progressY);
+                                    cursorArray[j].setAttribute('y2', y2Val - progressY);
+                                }
+        
+                                if (this.sq_cursor_flash && sq_cursor) {
+                                    let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
+                                    let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
+                                    sq_cursor.setAttribute('y1', y1Val1 - progressY);
+                                    sq_cursor.setAttribute('y2', y2Val1 - progressY);
+                                }
                             }
                         }
-                    }
-                    // 光标底部超出可视区域下方
-                    else if (cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
-                        // scrollContainer.scrollTop = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight;
-                        let progressY = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight - scrollY + translateYOffset;
-                        
-                        svg.style.transform = `translateY(-${progressY}px)`;
+                        // 光标底部超出可视区域下方
+                        else if (cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
+                            // scrollContainer.scrollTop = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight;
+                            let progressY = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight - scrollY + translateYOffset;
+                            
+                            svg.style.transform = `translateY(-${progressY}px)`;
 
-                        if (this.stand_cursor) {
-                            for (let j = 0; j < cursorArray.length; j++) {
-                                let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
-                                let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
-                                cursorArray[j].setAttribute('y1', y1Val - progressY);
-                                cursorArray[j].setAttribute('y2', y2Val - progressY);
-                            }
-    
-                            if (this.sq_cursor_flash && sq_cursor) {
-                                let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
-                                let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
-                                sq_cursor.setAttribute('y1', y1Val1 - progressY);
-                                sq_cursor.setAttribute('y2', y2Val2 - progressY);
+                            if (this.stand_cursor) {
+                                for (let j = 0; j < cursorArray.length; j++) {
+                                    let y1Val = parseFloat(cursorArray[j].getAttribute('y1'));
+                                    let y2Val = parseFloat(cursorArray[j].getAttribute('y2'));
+                                    cursorArray[j].setAttribute('y1', y1Val - progressY);
+                                    cursorArray[j].setAttribute('y2', y2Val - progressY);
+                                }
+        
+                                if (this.sq_cursor_flash && sq_cursor) {
+                                    let y1Val1 = parseFloat(sq_cursor.getAttribute('y1'));
+                                    let y2Val1 = parseFloat(sq_cursor.getAttribute('y2'));
+                                    sq_cursor.setAttribute('y1', y1Val1 - progressY);
+                                    sq_cursor.setAttribute('y2', y2Val1 - progressY);
+                                }
                             }
                         }
-                    }
 
-                    // if (cursorCenterYRelativeToContainerArray[0] < scrollY) {
-                    //     scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[0], behavior: 'smooth' });
-                    // } else if (cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
-                    //     scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] - containerViewableHeight, behavior: 'smooth' });
+                        // if (cursorCenterYRelativeToContainerArray[0] < scrollY) {
+                        //     scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[0], behavior: 'smooth' });
+                        // } else if (cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
+                        //     scrollContainer.scrollTo({ top: cursorCenterYRelativeToContainerArray[cursorCenterYRelativeToContainerArray.length - 1] - containerViewableHeight, behavior: 'smooth' });
+                        // }
+                    }
+                    
+                    // if (vicecursorArray.length > 0) {
+                    //     let cursorYTopRelativeToContainerArray = [];
+                    //     let cursorYBottomRelativeToContainerArray = [];
+
+                    //     for (let k = 0; k < vicecursorArray.length; k++) {
+                    //         const cursorYTopRelativeToContainer = parseFloat(vicecursorArray[k].getAttribute('y1'));
+                    //         const cursorYBottomRelativeToContainer = parseFloat(vicecursorArray[k].getAttribute('y2'));
+
+                    //         cursorYTopRelativeToContainerArray.push(cursorYTopRelativeToContainer);
+                    //         cursorYBottomRelativeToContainerArray.push(cursorYBottomRelativeToContainer);
+                    //     }
+
+                    //     cursorYTopRelativeToContainerArray = cursorYTopRelativeToContainerArray.sort((a, b) => a - b);
+                    //     cursorYBottomRelativeToContainerArray = cursorYBottomRelativeToContainerArray.sort((a, b) => a - b);
+
+                    //     let translateYOffset = 50
+                    //     // 光标顶部超出可视区域上方
+                    //     if (cursorYTopRelativeToContainerArray[0] < scrollY) {
+                    //         let progressY = cursorYTopRelativeToContainerArray[0] - scrollY - translateYOffset;
+
+                    //         if (this.stand_cursor) {
+                    //             for (let j = 0; j < vicecursorArray.length; j++) {
+                    //                 let y1Val = parseFloat(vicecursorArray[j].getAttribute('y1'));
+                    //                 let y2Val = parseFloat(vicecursorArray[j].getAttribute('y2'));
+                    //                 vicecursorArray[j].setAttribute('y1', y1Val - progressY);
+                    //                 vicecursorArray[j].setAttribute('y2', y2Val - progressY);
+                    //             }
+                    //         }
+                    //     }
+                    //     // 光标底部超出可视区域下方
+                    //     else if (cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] > scrollY + containerViewableHeight) {
+                    //         let progressY = cursorYBottomRelativeToContainerArray[cursorYBottomRelativeToContainerArray.length - 1] - containerViewableHeight - scrollY + translateYOffset;
+
+                    //         if (this.stand_cursor) {
+                    //             for (let j = 0; j < vicecursorArray.length; j++) {
+                    //                 let y1Val = parseFloat(vicecursorArray[j].getAttribute('y1'));
+                    //                 let y2Val = parseFloat(vicecursorArray[j].getAttribute('y2'));
+                    //                 vicecursorArray[j].setAttribute('y1', y1Val - progressY);
+                    //                 vicecursorArray[j].setAttribute('y2', y2Val - progressY);
+                    //             }
+                    //         }
+                    //     }
                     // }
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////
